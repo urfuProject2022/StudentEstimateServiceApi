@@ -5,32 +5,48 @@ using System.Threading.Tasks;
 
 namespace StudentEstimateServiceApi.Common
 {
-    public class OperationResult<T>
+    public class OperationResult
     {
-        public readonly T Result;
-        public string ErrorMessage;
+        public readonly string ErrorMessage;
 
         public bool IsSuccess => isSuccess;
         public bool IsError => !isSuccess;
 
         private readonly bool isSuccess;
 
-        public OperationResult(T result, bool isSuccess = false, string errorMessage = null)
+        public OperationResult(bool isSuccess = false, string errorMessage = null)
         {
-            Result = result;
             this.isSuccess = isSuccess;
-            this.ErrorMessage = errorMessage;
+            ErrorMessage = errorMessage;
+        }
+
+        public static OperationResult Success()
+        {
+            return new OperationResult(true);
+        }
+
+        public static OperationResult Fail(string errorMessage)
+        {
+            return new OperationResult(false, errorMessage);
         }
     }
 
-    public static class OperationResult
+    public class OperationResult<T> : OperationResult
     {
-        public static OperationResult<T> Success<T>(T result)
+        public readonly T Result;
+
+        public OperationResult(T result, bool isSuccess = false, string errorMessage = null)
+            : base(isSuccess, errorMessage)
+        {
+            Result = result;
+        }
+
+        public static OperationResult<T> Success(T result)
         {
             return new OperationResult<T>(result, true);
         }
 
-        public static OperationResult<T> Fail<T>(string errorMessage)
+        public static OperationResult<T> Fail(string errorMessage)
         {
             return new OperationResult<T>(default, false, errorMessage);
         }

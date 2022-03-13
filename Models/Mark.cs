@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace StudentEstimateServiceApi.Models
 {
-    public class Mark
+    public class Grade
     {
         public Guid Work;
         public Guid Assignment;
@@ -14,11 +11,11 @@ namespace StudentEstimateServiceApi.Models
         /// <summary>
         /// id пользователя который поставил оценку
         /// </summary>
-        public Guid MarkedByUser;
+        public Guid GradedByUser;
 
         /// <summary>
         /// id пользователя кому поставили оценку
         /// </summary>
-        public Guid MarkReceiver;
+        public Guid GradeReceiver;
     }
 }

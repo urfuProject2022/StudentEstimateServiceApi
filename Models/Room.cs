@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace StudentEstimateServiceApi.Models
 {
@@ -10,6 +8,6 @@ namespace StudentEstimateServiceApi.Models
         public List<Guid> Assignments;
         public string Name;
         public List<Guid> Users;
-        public Guid Owner;
+        public string OwnerId;
     }
 }
