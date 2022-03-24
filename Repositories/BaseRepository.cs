@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using StudentEstimateServiceApi.Common;
@@ -7,7 +6,7 @@ using StudentEstimateServiceApi.Settings;
 
 namespace StudentEstimateServiceApi.Repositories
 {
-    public class BaseRepository<T>
+    public class BaseRepository<T> where T : class
     {
         private readonly IMongoCollection<T> collection;
 
@@ -21,28 +20,33 @@ namespace StudentEstimateServiceApi.Repositories
         
         public async Task<OperationResult<T>> FindById(string id)
         {
-            var filter = new BsonDocument() { { "id", id } };
-            var findResult = await collection.Find(filter).ToListAsync();
-            var user = findResult.FirstOrDefault();
+            if (!ObjectId.TryParse(id, out var objectId))
+                return OperationResult<T>.Fail("Wrong id format");
+            
+            var filter = new BsonDocument("_id", objectId);
+            var user = await collection.Find(filter).SingleOrDefaultAsync();
 
             return user == null
-                ? OperationResult<T>.Fail($"{nameof(T)} with {id} is not found")
+                ? OperationResult<T>.Fail($"{typeof(T).Name} with id \"{id}\" is not found")
                 : OperationResult<T>.Success(user);
         }
 
-        public async Task<OperationResult<T>> Create(T create)
+        public async Task<OperationResult<T>> Create(T item)
         {
-            await collection.InsertOneAsync(create);
-            return OperationResult<T>.Success(create);
+            await collection.InsertOneAsync(item);
+            return OperationResult<T>.Success(item);
         }
 
         public async Task<OperationResult> Delete(string id)
         {
-            var filter = new BsonDocument() { { "id", id } };
+            if (!ObjectId.TryParse(id, out var objectId))
+                return OperationResult<T>.Fail("Wrong id format");
+            
+            var filter = new BsonDocument("_id", objectId);
             var deleteResult = await collection.DeleteOneAsync(filter);
             return deleteResult.IsAcknowledged && deleteResult.DeletedCount == 1
                 ? OperationResult.Success()
-                : OperationResult.Fail($"An error occurred while deleting user with id {id}");
+                : OperationResult.Fail($"An error occurred while deleting {typeof(T).Name} with id {id}");
         }
     }
 }
