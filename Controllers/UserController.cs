@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StudentEstimateServiceApi.Models;
 using StudentEstimateServiceApi.Models.DTO;
@@ -9,6 +11,7 @@ namespace StudentEstimateServiceApi.Controllers
 {
     [Route("users")]
     [ApiController]
+    [Authorize]
     public class UserController : Controller
     {
         private readonly IUserRepository userRepository;

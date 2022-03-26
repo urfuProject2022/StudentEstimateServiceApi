@@ -1,6 +1,11 @@
+﻿using System;
+using System.IO;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -12,6 +17,8 @@ namespace StudentEstimateServiceApi
 {
     public class Startup
     {
+        private string MyAllowSpecificOrigins= "123";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -29,8 +36,20 @@ namespace StudentEstimateServiceApi
                 sp.GetRequiredService<IOptions<MongoDatabaseSettings>>().Value);
 
             services.AddSingleton<IUserRepository, UserRepository>();
+            services.AddSingleton<AuthRepository>();
 
-            services.AddControllers();
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(
+                options =>
+                {
+                    options.Cookie.Name = "auth";
+                });
+
+            services.AddSpaStaticFiles(x =>
+            {
+                x.RootPath = "wwwroot";
+            });
+
+            services.AddControllers().AddNewtonsoftJson();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -50,11 +69,25 @@ namespace StudentEstimateServiceApi
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
+            if (!env.IsDevelopment())
+            {
+                app.UseSpaStaticFiles();
+            }
+            
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseSpa(x =>
+            {
+                x.Options.SourcePath = @"front";
+                if (!env.IsProduction())
+                {
+                    x.UseReactDevelopmentServer("start");
+                }
+            });
         }
     }
 }
