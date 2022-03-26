@@ -12,7 +12,7 @@ namespace StudentEstimateServiceApi.Common.Extensions
             {
                 Id = id.ToString(),
                 FullName = registrationDto.FullName,
-                Role = registrationDto.Role
+                Role = registrationDto.IsAdmin?Role.Admin:Role.User
             };
         }
 

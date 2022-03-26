@@ -1,15 +1,19 @@
 import React, {ReactComponentElement, useState} from 'react';
 import './App.css';
-import {Button, Checkbox, TextField} from "@mui/material";
+import {Button, Checkbox, FormControl, InputLabel, TextField} from "@mui/material";
 import {Auth} from "./Utils/Login";
+import {useNavigate} from "react-router-dom";
 
 const Login = () => {
     const [state, setState] = useState({login: String, password: String});
+    const navigate = useNavigate();
     return (<div>
-        <div><TextField onChange={x=>OnChange(x, setState, state)} id={"login"}></TextField></div>
-        <div><TextField onChange={x=>OnChange(x, setState, state)} id={"password"} ></TextField></div>
-        <Button onClick={x=> LoginInner(state)} variant="contained">Войти</Button>
-        <Button variant="outlined">Регистрация</Button>
+        <FormControl fullWidth sx={{ m: 1 }} >
+        <div><TextField label={"login"} onChange={x=>OnChange(x, setState, state)} id={"login"}></TextField></div>
+        <div><TextField label={"password"} onChange={x=>OnChange(x, setState, state)} id={"password"} ></TextField></div>
+        <div><Button onClick={x=> LoginInner(state)} variant="contained">Войти</Button></div>
+        <div><Button onClick={x=>navigate("/Registration")}>Регистрация</Button></div>
+        </FormControl>
     </div>);
 }
 

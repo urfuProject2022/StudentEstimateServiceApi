@@ -8,6 +8,7 @@ import NeedAuthComponent from "./NeedLogin";
 import NeedLogin from "./NeedLogin";
 import {RequireAuth} from "./Auth/RequiredAuth";
 import {AuthProvider} from "./Auth/AuthProvider";
+import Registration from "./Registration";
 
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
             <AuthProvider>
                 <Routes>
                     <Route path="/Login" element={<Login/>}/>
+                    <Route path = "/Registration" element={<Registration/>}/>
                     <Route path="/" element={<RequireAuth><NeedLogin/></RequireAuth>}/>
                 </Routes>
             </AuthProvider>
