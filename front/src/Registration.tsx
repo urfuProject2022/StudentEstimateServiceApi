@@ -5,7 +5,7 @@ import {Auth, RegistrationRequest} from "./Utils/Login";
 import {useNavigate} from "react-router-dom";
 
 export interface RegistrationDto {
-    IsAdmin: boolean,
+    IsAdmin: number,
     Login: string,
     Password: string,
     FullName: string
@@ -14,7 +14,7 @@ export interface RegistrationDto {
 const Login = () => {
     const dto: RegistrationDto = {
          FullName: "Vasya",
-         IsAdmin: false,
+         IsAdmin: 0,
          Login: "",
          Password: "",
     }

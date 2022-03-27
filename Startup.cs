@@ -42,6 +42,8 @@ namespace StudentEstimateServiceApi
                 options =>
                 {
                     options.Cookie.Name = "auth";
+                    options.Cookie.HttpOnly = false;
+                    
                 });
 
             services.AddSpaStaticFiles(x =>
@@ -83,6 +85,7 @@ namespace StudentEstimateServiceApi
             app.UseSpa(x =>
             {
                 x.Options.SourcePath = @"front";
+                
                 if (!env.IsProduction())
                 {
                     x.UseReactDevelopmentServer("start");

@@ -6,8 +6,8 @@ import Login from "./Login";
 import {useNavigate} from 'react-router-dom'
 import NeedAuthComponent from "./NeedLogin";
 import NeedLogin from "./NeedLogin";
-import {RequireAuth} from "./Auth/RequiredAuth";
-import {AuthProvider} from "./Auth/AuthProvider";
+import {RequireAuth} from "./Components/ProtectedRoutes/RequiredAuth";
+import {AuthProvider} from "./Components/ProtectedRoutes/AuthProvider";
 import Registration from "./Registration";
 
 

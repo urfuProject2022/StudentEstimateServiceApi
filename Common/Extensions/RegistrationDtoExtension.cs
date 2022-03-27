@@ -20,7 +20,7 @@ namespace StudentEstimateServiceApi.Common.Extensions
         {
             return new UserAuth()
             {
-                Id = id,
+                Id = id.ToString(),
                 Login = registrationDto.Login,
                 Password = registrationDto.Password
             };

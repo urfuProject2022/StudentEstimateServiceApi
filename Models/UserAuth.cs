@@ -10,8 +10,8 @@ namespace StudentEstimateServiceApi.Models
     public class UserAuth
     {
         [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public Guid Id { get; set; }
+        [BsonRepresentation(BsonType.String)]
+        public string Id { get; set; }
 
         public string Login { get; set; }
 

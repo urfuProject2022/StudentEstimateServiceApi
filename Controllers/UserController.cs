@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StudentEstimateServiceApi.Models;
@@ -11,7 +11,7 @@ namespace StudentEstimateServiceApi.Controllers
 {
     [Route("users")]
     [ApiController]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class UserController : Controller
     {
         private readonly IUserRepository userRepository;

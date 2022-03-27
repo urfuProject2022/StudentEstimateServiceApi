@@ -1,8 +1,7 @@
 import React from "react";
-import {Auth} from "../Utils/Login";
-import {getCookie} from "typescript-cookie";
-import {OperationResult} from "../Utils/OperationResult";
-import {fabClasses} from "@mui/material";
+import {Auth} from "../../Utils/Login";
+import {getCookie, getCookies, setCookie} from "typescript-cookie";
+import {OperationResult} from "../../Utils/OperationResult";
 
 interface UserIdentity {
     Id?: string,
@@ -19,7 +18,9 @@ interface AuthContextType {
 let AuthContext = React.createContext<AuthContextType>(null!);
 
 export function AuthProvider({children}: { children: React.ReactNode }) {
-    let [user, setUser] = React.useState<UserIdentity>({});
+    let cookie = getCookie("auth");
+    const hasCookie = cookie !=undefined && cookie !=null;
+    let [user, setUser] = React.useState<UserIdentity>({HasCookie: hasCookie});
 
     let signin = (login: string, password: string, callback: VoidFunction) => {
         return SetUserByAuth(login, password, setUser);

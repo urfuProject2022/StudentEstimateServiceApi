@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 using StudentEstimateServiceApi.Common;
 using StudentEstimateServiceApi.Common.Extensions;
 using StudentEstimateServiceApi.Models.DTO;
@@ -27,6 +28,7 @@ namespace StudentEstimateServiceApi.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromHeader] string login, [FromHeader] string password)
         {
+            var gr = HttpContext.GetUserId();
             var userAuth =await authRepository.FindFirst(x=>x.Login == login && x.Password == password);
 
             if (userAuth == null)
@@ -54,18 +56,17 @@ namespace StudentEstimateServiceApi.Controllers
             await userRepository.Create(registrationDto.ToUserModel(id));
 
 
-            await SignIn(id);
+            await SignIn(id.ToString());
 
             return Ok(OperationResult.Success());
         }
 
-        private Task SignIn(Guid userId)
+        private Task SignIn(string userId)
         {
             var claims = new List<Claim>
             {
-                new(ClaimsIdentity.DefaultNameClaimType, userId.ToString())
+                new(ClaimsIdentity.DefaultNameClaimType, userId)
             };
-
             var id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
             return HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(id));
         }
