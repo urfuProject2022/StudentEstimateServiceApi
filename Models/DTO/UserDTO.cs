@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace StudentEstimateServiceApi.Models.DTO
 {
-    public class UserDTO
+    public class UserDto
     {
         public string Id { get; set; }
         public List<Guid> Rooms { get; set; }

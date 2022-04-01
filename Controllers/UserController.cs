@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StudentEstimateServiceApi.Models;
 using StudentEstimateServiceApi.Models.DTO;
@@ -9,6 +11,7 @@ namespace StudentEstimateServiceApi.Controllers
 {
     [Route("users")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class UserController : Controller
     {
         private readonly IUserRepository userRepository;
@@ -19,7 +22,7 @@ namespace StudentEstimateServiceApi.Controllers
         }
 
         [HttpGet("{userId}")]
-        public async Task<ActionResult<UserDTO>> GetUserById([FromRoute] string userId)
+        public async Task<ActionResult<UserDto>> GetUserById([FromRoute] string userId)
         {
             var result = await userRepository.FindById(userId);
             
@@ -34,11 +37,11 @@ namespace StudentEstimateServiceApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<UserDTO>> CreateUser([FromBody] UserDTO userDTO)
+        public async Task<ActionResult<UserDto>> CreateUser([FromBody] UserDto userDTO)
         {
             var user = new User()
             {
-                Id = userDTO.Id,
+                //Id = userDTO.Id,парсить маппером
                 FullName = userDTO.FullName,
                 Role = userDTO.Role
             }; // Change to Mapper....
