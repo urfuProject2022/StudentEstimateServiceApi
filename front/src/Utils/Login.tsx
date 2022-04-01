@@ -1,6 +1,6 @@
 
 import settings from "../settings.json";
-import {RegistrationDto} from "../Registration";
+import {RegistrationDto} from "../Components/Authorization/Registration";
 
 
 export const Auth = (login: string, password:string) => {

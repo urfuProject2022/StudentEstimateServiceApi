@@ -1,14 +1,11 @@
-import React, {ReactComponentElement} from 'react';
-import logo from './logo.svg';
+import React from 'react';
 import './App.css';
-import {Route, Router, Routes} from "react-router-dom";
-import Login from "./Login";
-import {useNavigate} from 'react-router-dom'
-import NeedAuthComponent from "./NeedLogin";
-import NeedLogin from "./NeedLogin";
+import {Route, Routes} from "react-router-dom";
+import Login from "./Components/Authorization/Login";
+import NeedLogin from "./Components/Authorization/NeedLogin";
 import {RequireAuth} from "./Components/ProtectedRoutes/RequiredAuth";
 import {AuthProvider} from "./Components/ProtectedRoutes/AuthProvider";
-import Registration from "./Registration";
+import Registration from "./Components/Authorization/Registration";
 
 
 function App() {
@@ -17,7 +14,7 @@ function App() {
             <AuthProvider>
                 <Routes>
                     <Route path="/Login" element={<Login/>}/>
-                    <Route path = "/Registration" element={<Registration/>}/>
+                    <Route path="/Registration" element={<Registration/>}/>
                     <Route path="/" element={<RequireAuth><NeedLogin/></RequireAuth>}/>
                 </Routes>
             </AuthProvider>

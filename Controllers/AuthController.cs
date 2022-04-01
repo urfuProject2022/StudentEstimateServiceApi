@@ -28,15 +28,12 @@ namespace StudentEstimateServiceApi.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromHeader] string login, [FromHeader] string password)
         {
-            var gr = HttpContext.GetUserId();
             var userAuth =await authRepository.FindFirst(x=>x.Login == login && x.Password == password);
 
-            if (userAuth == null)
-            {
+            if (userAuth == null) 
                 return BadRequest(OperationResult.Fail("Неверный логин или пароль"));
-            }
 
-            await SignIn(userAuth.Id);
+            await SignIn(userAuth.UserId.ToString());
 
             return Ok(OperationResult.Success());
         }
@@ -45,13 +42,10 @@ namespace StudentEstimateServiceApi.Controllers
         public async Task<IActionResult> Register([FromBody] RegistrationDto registrationDto)
         {
             var isUserExists = await authRepository.Any(x => x.Login == registrationDto.Login);
-
-            if (isUserExists)
-            {
+            if (isUserExists) 
                 return BadRequest(OperationResult.Fail("Пользователь с таким логином уже есть"));
-            }
 
-            var id = Guid.NewGuid();
+            var id = new BsonObjectId(ObjectId.GenerateNewId());
             await authRepository.Create(registrationDto.ToAuthModel(id));
             await userRepository.Create(registrationDto.ToUserModel(id));
 

@@ -22,7 +22,7 @@ namespace StudentEstimateServiceApi.Controllers
         }
 
         [HttpGet("{userId}")]
-        public async Task<ActionResult<UserDTO>> GetUserById([FromRoute] string userId)
+        public async Task<ActionResult<UserDto>> GetUserById([FromRoute] string userId)
         {
             var result = await userRepository.FindById(userId);
             
@@ -37,11 +37,11 @@ namespace StudentEstimateServiceApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<UserDTO>> CreateUser([FromBody] UserDTO userDTO)
+        public async Task<ActionResult<UserDto>> CreateUser([FromBody] UserDto userDTO)
         {
             var user = new User()
             {
-                Id = userDTO.Id,
+                //Id = userDTO.Id,парсить маппером
                 FullName = userDTO.FullName,
                 Role = userDTO.Role
             }; // Change to Mapper....

@@ -1,4 +1,5 @@
 ﻿using System;
+using MongoDB.Bson;
 using StudentEstimateServiceApi.Models;
 using StudentEstimateServiceApi.Models.DTO;
 
@@ -6,21 +7,21 @@ namespace StudentEstimateServiceApi.Common.Extensions
 {
     public static class RegistrationDtoExtension
     {
-        public static User ToUserModel(this  RegistrationDto registrationDto, Guid id)
+        public static User ToUserModel(this RegistrationDto registrationDto, BsonObjectId id)
         {
-            return new User()
+            return new User
             {
-                Id = id.ToString(),
+                Id = id,
                 FullName = registrationDto.FullName,
-                Role = registrationDto.IsAdmin?Role.Admin:Role.User
+                Role = registrationDto.IsAdmin ? Role.Admin : Role.User
             };
         }
 
-        public static UserAuth ToAuthModel(this RegistrationDto registrationDto, Guid id)
+        public static UserAuth ToAuthModel(this RegistrationDto registrationDto, BsonObjectId id)
         {
-            return new UserAuth()
+            return new UserAuth
             {
-                Id = id.ToString(),
+                UserId = id,
                 Login = registrationDto.Login,
                 Password = registrationDto.Password
             };
