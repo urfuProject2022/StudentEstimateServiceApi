@@ -55,3 +55,4 @@ packages/
 /front/yarn-debug.log*
 /front/yarn-error.log*
 
+/front/package-lock.json
