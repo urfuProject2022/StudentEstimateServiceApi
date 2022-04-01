@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using MongoDB.Driver;
 using StudentEstimateServiceApi.Common;
 using StudentEstimateServiceApi.Models;

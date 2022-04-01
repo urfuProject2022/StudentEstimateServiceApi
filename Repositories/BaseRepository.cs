@@ -9,7 +9,7 @@ namespace StudentEstimateServiceApi.Repositories
 {
     public class BaseRepository<T>
     {
-        private readonly IMongoCollection<T> collection;
+        protected readonly IMongoCollection<T> collection;
 
         public BaseRepository(IMongoDatabaseSettings dbSettings, string collectionName)
         {

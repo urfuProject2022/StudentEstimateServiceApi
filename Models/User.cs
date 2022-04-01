@@ -8,10 +8,10 @@ namespace StudentEstimateServiceApi.Models
     public class User
     {
         [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
-        public List<Guid> Rooms { get; set; }
-        public List<Guid> CreatedRooms { get; set; }
+        public BsonObjectId Id { get; set; }
+
+        public List<Guid> Rooms { get; set; } = new();
+        public List<Guid> CreatedRooms { get; set; } = new();
         public Role Role { get; set; }
         public string FullName { get; set; }
     }
