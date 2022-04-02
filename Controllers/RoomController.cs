@@ -28,7 +28,13 @@ namespace StudentEstimateServiceApi.Controllers
 		public async Task<ActionResult<RoomDto>> CreateRoom([FromBody] RoomDto roomDto)
 		{
 			var room = mapper.Map<Room>(roomDto);
-			room.OwnerId = HttpContext.GetUserId();
+
+			var userId = HttpContext.GetUserId();
+			if (userId.HasValue)
+				room.OwnerId = userId.Value;
+			else
+				return BadRequest();
+			
 			var findResult = await userRepository.FindById(room.OwnerId);
 			var user = findResult.Result;
 

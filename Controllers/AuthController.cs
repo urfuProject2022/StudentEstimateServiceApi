@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using StudentEstimateServiceApi.Common;
@@ -14,6 +15,7 @@ using StudentEstimateServiceApi.Repositories.Interfaces;
 namespace StudentEstimateServiceApi.Controllers
 {
     [Route(Route.Base + "/auth")]
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class AuthController : Controller
     {
         private readonly IAuthRepository authRepository;
