@@ -1,47 +1,22 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using System.Threading.Tasks;
 using MongoDB.Driver;
 using StudentEstimateServiceApi.Common;
 using StudentEstimateServiceApi.Models;
+using StudentEstimateServiceApi.Repositories.Interfaces;
 using StudentEstimateServiceApi.Settings;
 
 namespace StudentEstimateServiceApi.Repositories
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository : BaseRepository<User>, IUserRepository
     {
-        private readonly IMongoCollection<User> collection;
-
-        public UserRepository(IMongoDatabaseSettings dbSettings)
+        public UserRepository(IMongoDatabaseSettings dbSettings) : base(dbSettings, dbSettings.UserCollectionName)
         {
-            var client = new MongoClient(dbSettings.ConnectionString);
-            var database = client.GetDatabase(dbSettings.DatabaseName);
-
-            collection = database.GetCollection<User>(dbSettings.UserCollectionName);
         }
 
-        public async Task<OperationResult<User>> FindById(string id)
+        public async Task<OperationResult<User>> Update(User user)
         {
-            var findResult = await collection.Find(u => u.Id == id).ToListAsync();
-            var user = findResult.FirstOrDefault();
-
-            return user == null
-                ? OperationResult<User>.Fail($"{nameof(User)} with {id} is not found")
-                : OperationResult<User>.Success(user);
-        }
-
-        public async Task<OperationResult<User>> Create(User user)
-        {
-            await collection.InsertOneAsync(user);
+            await Collection.ReplaceOneAsync(u => u.Id == user.Id, user);
             return OperationResult<User>.Success(user);
         }
-
-        public async Task<OperationResult> Delete(string id)
-        {
-            var deleteResult = await collection.DeleteOneAsync(u => u.Id == id);
-            return deleteResult.IsAcknowledged && deleteResult.DeletedCount == 1
-                ? OperationResult.Success()
-                : OperationResult.Fail($"An error occurred while deleting user with id {id}");
-        }
-    }
+    }   
 }

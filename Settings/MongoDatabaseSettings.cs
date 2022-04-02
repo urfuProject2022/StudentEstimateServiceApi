@@ -6,5 +6,6 @@
         public string DatabaseName { get; set; }
         public string UserCollectionName { get; set; }
         public string AuthCollectionName { get; set; }
+        public string RoomCollectionName { get; set; }
     }
 }

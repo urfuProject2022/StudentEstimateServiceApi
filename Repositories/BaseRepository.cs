@@ -2,48 +2,57 @@
 using MongoDB.Bson;
 using MongoDB.Driver;
 using StudentEstimateServiceApi.Common;
+using StudentEstimateServiceApi.Repositories.Interfaces;
 using StudentEstimateServiceApi.Settings;
 
 namespace StudentEstimateServiceApi.Repositories
 {
-    public class BaseRepository<T> where T : class
+    public class BaseRepository<T> : IBaseRepository<T>
     {
-        protected readonly IMongoCollection<T> collection;
+        protected readonly IMongoCollection<T> Collection;
 
-        public BaseRepository(IMongoDatabaseSettings dbSettings, string collectionName)
+        protected BaseRepository(IMongoDatabaseSettings dbSettings, string collectionName)
         {
             var client = new MongoClient(dbSettings.ConnectionString);
             var database = client.GetDatabase(dbSettings.DatabaseName);
 
-            collection = database.GetCollection<T>(collectionName);
+            Collection = database.GetCollection<T>(collectionName);
         }
         
-        public async Task<OperationResult<T>> FindById(string id)
+        public Task<OperationResult<T>> FindById(string id)
         {
             if (!ObjectId.TryParse(id, out var objectId))
-                return OperationResult<T>.Fail("Wrong id format");
-            
-            var filter = new BsonDocument("_id", objectId);
-            var user = await collection.Find(filter).SingleOrDefaultAsync();
+                return Task.FromResult(OperationResult<T>.Fail("Wrong id format"));
+            return FindById(objectId);
+        }
+        
+        public async Task<OperationResult<T>> FindById(ObjectId id)
+        {
+            var filter = new BsonDocument("_id", id);
+            var user = await Collection.Find(filter).SingleOrDefaultAsync();
 
-            return user == null
+            return user == null // Возможно просто стоит возвращать null и на проверке в API кидать NotFound()
                 ? OperationResult<T>.Fail($"{typeof(T).Name} with id \"{id}\" is not found")
                 : OperationResult<T>.Success(user);
         }
 
         public async Task<OperationResult<T>> Create(T item)
         {
-            await collection.InsertOneAsync(item);
+            await Collection.InsertOneAsync(item);
             return OperationResult<T>.Success(item);
         }
 
-        public async Task<OperationResult> Delete(string id)
+        public Task<OperationResult> Delete(string id)
         {
             if (!ObjectId.TryParse(id, out var objectId))
-                return OperationResult<T>.Fail("Wrong id format");
-            
-            var filter = new BsonDocument("_id", objectId);
-            var deleteResult = await collection.DeleteOneAsync(filter);
+                return Task.FromResult(OperationResult.Fail("Wrong id format"));
+            return Delete(objectId);
+        }
+        
+        public async Task<OperationResult> Delete(ObjectId id)
+        {
+            var filter = new BsonDocument("_id", id);
+            var deleteResult = await Collection.DeleteOneAsync(filter);
             return deleteResult.IsAcknowledged && deleteResult.DeletedCount == 1
                 ? OperationResult.Success()
                 : OperationResult.Fail($"An error occurred while deleting {typeof(T).Name} with id {id}");
