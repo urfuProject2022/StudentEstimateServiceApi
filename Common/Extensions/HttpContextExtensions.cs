@@ -5,14 +5,14 @@ namespace StudentEstimateServiceApi.Common.Extensions
 {
     public static class HttpContextExtensions
     {
-        public static BsonObjectId GetUserId(this HttpContext context)
+        public static ObjectId GetUserId(this HttpContext context)
         {
             var id = context.User.Identity?.Name;
 
             if (id != null && ObjectId.TryParse(id, out var parsedId))
-                return new BsonObjectId(parsedId);
+                return parsedId;
 
-            return null;
+            return ObjectId.Empty;
         }
     }
 }
