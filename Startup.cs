@@ -6,7 +6,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using StudentEstimateServiceApi.Models;
+using StudentEstimateServiceApi.Models.DTO;
 using StudentEstimateServiceApi.Repositories;
+using StudentEstimateServiceApi.Repositories.Interfaces;
 using StudentEstimateServiceApi.Settings;
 
 namespace StudentEstimateServiceApi
@@ -20,7 +23,6 @@ namespace StudentEstimateServiceApi
             Configuration = configuration;
         }
 
-
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -31,8 +33,22 @@ namespace StudentEstimateServiceApi
                 sp.GetRequiredService<IOptions<MongoDatabaseSettings>>().Value);
 
             services.AddSingleton<IUserRepository, UserRepository>();
-            services.AddSingleton<AuthRepository>();
+            services.AddSingleton<IRoomRepository, RoomRepository>();
+            services.AddSingleton<IAuthRepository, AuthRepository>();
 
+            services.AddControllers();
+            
+            services.AddAutoMapper(cfg =>
+            {
+                cfg.CreateMap<User, UserDto>();
+                cfg.CreateMap<UserDto, User>();
+                cfg.CreateMap<Room, RoomDto>();
+                cfg.CreateMap<RoomDto, Room>();
+                cfg.CreateMap<RegistrationDto, UserAuth>();
+                cfg.CreateMap<RegistrationDto, User>()
+                    .ForMember(x => x.Role, opt => opt.MapFrom(src => src.IsAdmin ? Role.Admin : Role.User));
+            }, new System.Reflection.Assembly[0]);
+            
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(
                 options =>
                 {
