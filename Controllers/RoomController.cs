@@ -42,7 +42,7 @@ namespace StudentEstimateServiceApi.Controllers
 				room.OwnerId = userId.Value;
 			else
 				return BadRequest();
-			
+			room.Id = ObjectId.GenerateNewId();
 			var findResult = await userRepository.FindById(room.OwnerId);
 			var user = findResult.Result;
 

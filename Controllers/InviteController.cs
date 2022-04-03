@@ -28,7 +28,7 @@ namespace StudentEstimateServiceApi.Controllers
             if (userId == null)
                 return Unauthorized();
 
-            var acceptResult = await inviteService.Accept(roomId, userId);
+            var acceptResult = await inviteService.Accept(roomId, userId.Value);
             if (acceptResult.IsError)
                 return StatusCode((int)HttpStatusCode.InternalServerError, acceptResult.ErrorMessage);
 
