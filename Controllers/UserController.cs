@@ -10,7 +10,7 @@ using StudentEstimateServiceApi.Repositories.Interfaces;
 
 namespace StudentEstimateServiceApi.Controllers
 {
-    [Route(Route.Base + "users")]
+    [Route(Route.Base + "/users")]
     [ApiController]
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class UserController : Controller

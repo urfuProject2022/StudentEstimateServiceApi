@@ -1,6 +1,8 @@
 ﻿using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using StudentEstimateServiceApi.Common;
@@ -14,6 +16,7 @@ namespace StudentEstimateServiceApi.Controllers
 {
 	[Route(Route.Base + "/rooms")]
 	[ApiController]
+	[Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
 	public class RoomController : Controller
 	{
 		private readonly IRoomRepository roomRepository;
@@ -33,8 +36,13 @@ namespace StudentEstimateServiceApi.Controllers
 		public async Task<ActionResult<RoomDto>> CreateRoom([FromBody] RoomDto roomDto)
 		{
 			var room = mapper.Map<Room>(roomDto);
-			room.OwnerId = HttpContext.GetUserId();
-			room.Id = ObjectId.GenerateNewId();
+
+			var userId = HttpContext.GetUserId();
+			if (userId.HasValue)
+				room.OwnerId = userId.Value;
+			else
+				return BadRequest();
+			
 			var findResult = await userRepository.FindById(room.OwnerId);
 			var user = findResult.Result;
 
