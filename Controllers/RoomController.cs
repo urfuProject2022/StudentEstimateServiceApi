@@ -1,5 +1,7 @@
 ﻿using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StudentEstimateServiceApi.Common;
 using StudentEstimateServiceApi.Common.Extensions;
@@ -11,6 +13,7 @@ namespace StudentEstimateServiceApi.Controllers
 {
 	[Route(Route.Base + "/rooms")]
 	[ApiController]
+	[Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
 	public class RoomController : Controller
 	{
 		private readonly IRoomRepository roomRepository;

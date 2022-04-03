@@ -15,7 +15,6 @@ using StudentEstimateServiceApi.Repositories.Interfaces;
 namespace StudentEstimateServiceApi.Controllers
 {
     [Route(Route.Base + "/auth")]
-    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class AuthController : Controller
     {
         private readonly IAuthRepository authRepository;
