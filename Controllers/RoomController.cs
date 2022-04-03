@@ -1,8 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System.Net;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 using StudentEstimateServiceApi.Common;
 using StudentEstimateServiceApi.Common.Extensions;
+using StudentEstimateServiceApi.Infrastructure.Services.InviteService;
 using StudentEstimateServiceApi.Models;
 using StudentEstimateServiceApi.Models.DTO;
 using StudentEstimateServiceApi.Repositories.Interfaces;
@@ -15,13 +18,15 @@ namespace StudentEstimateServiceApi.Controllers
 	{
 		private readonly IRoomRepository roomRepository;
 		private readonly IUserRepository userRepository;
-		private readonly IMapper mapper;
+        private readonly IInviteService inviteService;
+        private readonly IMapper mapper;
 		
-		public RoomController(IRoomRepository roomRepository, IUserRepository userRepository, IMapper mapper)
+		public RoomController(IRoomRepository roomRepository, IUserRepository userRepository,IInviteService inviteService, IMapper mapper)
 		{
 			this.roomRepository = roomRepository;
 			this.userRepository = userRepository;
-			this.mapper = mapper;
+            this.inviteService = inviteService;
+            this.mapper = mapper;
 		}
 		
 		[HttpPost]
@@ -29,11 +34,21 @@ namespace StudentEstimateServiceApi.Controllers
 		{
 			var room = mapper.Map<Room>(roomDto);
 			room.OwnerId = HttpContext.GetUserId();
+			room.Id = ObjectId.GenerateNewId();
 			var findResult = await userRepository.FindById(room.OwnerId);
 			var user = findResult.Result;
 
 			//if (user.Role != Role.Admin)
 			//	return Forbid();
+
+            var inviteUrl = inviteService.GenerateInviteUrl(HttpContext.Request.Host.Value, room.Id);
+
+			if (inviteUrl.IsError)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, inviteUrl.ErrorMessage);
+            }
+
+            room.Invite = inviteUrl.Result;
 
 			var createResult = await roomRepository.Create(room);
 			if (!createResult.IsSuccess)

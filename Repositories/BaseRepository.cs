@@ -21,7 +21,7 @@ namespace StudentEstimateServiceApi.Repositories
         
         public Task<OperationResult<T>> FindById(string id)
         {
-            if (!ObjectId.TryParse(id, out var objectId))
+            if (id == null || !ObjectId.TryParse(id, out var objectId))
                 return Task.FromResult(OperationResult<T>.Fail("Wrong id format"));
             return FindById(objectId);
         }
@@ -44,7 +44,7 @@ namespace StudentEstimateServiceApi.Repositories
 
         public Task<OperationResult> Delete(string id)
         {
-            if (!ObjectId.TryParse(id, out var objectId))
+            if (id == null || !ObjectId.TryParse(id, out var objectId))
                 return Task.FromResult(OperationResult.Fail("Wrong id format"));
             return Delete(objectId);
         }
