@@ -1,32 +1,55 @@
 import React, {useState} from 'react';
 import '../../App.css';
-import {Button, FormControl, TextField} from "@mui/material";
+import {Button, Card, FormControl, TextField} from "@mui/material";
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../ProtectedRoutes/AuthProvider";
+import {LoginRequest} from  "../../Utils/Requests"
+import "../../Styles/Auth.css"
 
 const Login = () => {
-    const [state, setState] = useState({login: "", password: ""});
-    const auth = useAuth();
-    const navigate = useNavigate();
-    return (<div>
-        <FormControl fullWidth sx={{m: 1}}>
-            <div><TextField label={"login"} onChange={x => OnChange(x, setState, state)} id={"login"}/></div>
-            <div><TextField label={"password"} onChange={x => OnChange(x, setState, state)} id={"password"}/></div>
-            <div><Button onClick={() => auth.signIn(state.login, state.password)} variant="contained">Войти</Button>
-            </div>
-            <div><Button onClick={() => navigate("/Registration")}>Регистрация</Button></div>
-        </FormControl>
-    </div>);
-}
+    const [login, setLogin] = useState("")
+    const [password, setPassword] = useState("")
+    const [errorMessage, setErrorMessage] = useState("")
 
-const LoginInner = (state: any) => {
-    //authState.signIn(state.login, state.password);
-}
+    const auth = useAuth()
+    const navigate = useNavigate()
 
-const OnChange = (target: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, setstate: any, state: any) => {
-    const newState = {...state};
-    newState[target.currentTarget.id] = target.target.value.toString();
-    setstate(newState);
+    const onLogin = () => {
+        LoginRequest(login, password)
+            .then(async resp => {
+                if (!resp.ok){
+                    let errorMessage = await resp.text()
+                    setErrorMessage(errorMessage)
+                }
+                else {
+                    auth.setCookieState(true)
+                    navigate("/")
+                }
+            })
+    }
+
+    return <div className="auth-container">
+        <Card variant={"outlined"} className="auth-card" sx={{background: "#FAFAFA"}}>
+            <FormControl margin={"normal"}
+                         className="auth">
+                <TextField label="Логин"
+                           autoFocus={true}
+                           onChange={x => setLogin(x.target.value)}
+                           id={"login"}/>
+                <TextField label="Пароль"
+                           type="password"
+                           onChange={x => setPassword(x.target.value)}
+                           id={"password"}/>
+                <Button onClick={() => onLogin()}
+                        variant="contained"
+                        disabled={!login || !password}>Войти</Button>
+                <Button variant={"outlined"}
+                        onClick={() => navigate("/registration")}
+                        type="submit">Регистрация</Button>
+            </FormControl>
+            <div className="error">{errorMessage}</div>
+        </Card>
+    </div>
 }
 
 export default Login;
