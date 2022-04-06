@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using MongoDB.Bson;
 
 namespace StudentEstimateServiceApi.Models
 {
@@ -9,7 +8,7 @@ namespace StudentEstimateServiceApi.Models
     {
         public string Tittle;
         public string Description;
-        public List<Guid> Work;
+        public List<ObjectId> Work;
         public DateTime ExpirationTime;
     }
 }

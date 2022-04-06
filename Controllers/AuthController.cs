@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using StudentEstimateServiceApi.Common;
@@ -46,7 +45,7 @@ namespace StudentEstimateServiceApi.Controllers
         {
             var isUserExists = await authRepository.Any(x => x.Login == registrationDto.Login);
             if (isUserExists) 
-                return BadRequest("Пользователь с таким логином уже есть");
+                return BadRequest("Пользователь с таким логином уже существует");
 
             var id = ObjectId.GenerateNewId();
             var user = new User { Id = id };

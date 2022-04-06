@@ -7,5 +7,6 @@
         string UserCollectionName { get; set; }
         string AuthCollectionName { get; set; }
         string RoomCollectionName { get; set; }
+        string AssignmentCollectionName { get; set; }
     }
 }

@@ -7,5 +7,6 @@
         public string UserCollectionName { get; set; }
         public string AuthCollectionName { get; set; }
         public string RoomCollectionName { get; set; }
+        public string AssignmentCollectionName { get; set; }
     }
 }

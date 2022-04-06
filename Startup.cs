@@ -35,6 +35,7 @@ namespace StudentEstimateServiceApi
             services.AddSingleton<IUserRepository, UserRepository>();
             services.AddSingleton<IRoomRepository, RoomRepository>();
             services.AddSingleton<IAuthRepository, AuthRepository>();
+            services.AddSingleton<IAssignmentRepository, AssignmentRepository>();
 
             services.AddControllers();
             
@@ -54,7 +55,6 @@ namespace StudentEstimateServiceApi
                 {
                     options.Cookie.Name = "auth";
                     options.Cookie.HttpOnly = false;
-                    
                 });
 
             services.AddSpaStaticFiles(x =>
