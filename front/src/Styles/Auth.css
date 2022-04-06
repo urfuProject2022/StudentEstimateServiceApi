@@ -1,0 +1,22 @@
+.auth {
+    gap: 0.6em;
+}
+
+.auth-card {
+    padding: 35px;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.auth-container {
+    margin-top: 30vh;
+}
+
+.radio {
+    align-self: center;
+}
+
+.error {
+    color: red;
+}
