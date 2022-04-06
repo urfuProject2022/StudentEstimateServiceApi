@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import '../../App.css';
-import {Button, Card, FormControl, FormControlLabel, Radio, RadioGroup, TextField} from "@mui/material";
+import {Button, Card, FormControlLabel, FormGroup, Radio, RadioGroup, TextField} from "@mui/material";
 import {RegistrationRequest} from "../../Utils/Requests";
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../ProtectedRoutes/AuthProvider";
@@ -46,8 +46,7 @@ export const Registration = () => {
 
     return <div className="auth-container">
         <Card variant={"outlined"} className="auth-card" sx={{background: "#FAFAFA"}}>
-            <FormControl margin={"normal"}
-                         className="auth">
+            <FormGroup  className="auth">
                 <TextField label="ФИО" onChange={handleChange("FullName")} id={"FullName"}/>
                 <TextField label="Логин" onChange={handleChange("Login")} id={"Login"}/>
                 <TextField label="Пароль" onChange={handleChange("Password")} type="password" id={"Password"}/>
@@ -65,7 +64,7 @@ export const Registration = () => {
                 <Button onClick={() => onRegister(dto)}
                         variant="contained"
                         disabled={!(dto.Password && dto.Login && dto.FullName)}>Зарегистрироваться</Button>
-            </FormControl>
+            </FormGroup>
             <div className="error">{errorMessage}</div>
         </Card>
     </div>

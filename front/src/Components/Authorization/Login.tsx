@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import '../../App.css';
-import {Button, Card, FormControl, TextField} from "@mui/material";
+import {Button, Card, FormGroup, TextField} from "@mui/material";
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../ProtectedRoutes/AuthProvider";
 import {LoginRequest} from  "../../Utils/Requests"
@@ -30,8 +30,7 @@ const Login = () => {
 
     return <div className="auth-container">
         <Card variant={"outlined"} className="auth-card" sx={{background: "#FAFAFA"}}>
-            <FormControl margin={"normal"}
-                         className="auth">
+            <FormGroup className="auth">
                 <TextField label="Логин"
                            autoFocus={true}
                            onChange={x => setLogin(x.target.value)}
@@ -46,8 +45,8 @@ const Login = () => {
                 <Button variant={"outlined"}
                         onClick={() => navigate("/registration")}
                         type="submit">Регистрация</Button>
-            </FormControl>
-            <div className="error">{errorMessage}</div>
+                <div className="error">{errorMessage}</div>
+            </FormGroup>
         </Card>
     </div>
 }
