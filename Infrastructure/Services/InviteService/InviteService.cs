@@ -32,6 +32,9 @@ namespace StudentEstimateServiceApi.Infrastructure.Services.InviteService
             var room = findRoomResult.Result;
             var user = findUserResult.Result;
 
+            if (IsConflict(room, user))
+                return OperationResult.Fail("Conflict", 409);
+
             if (IsUserInRoom(room, userId))
                 return OperationResult.Success();
 
@@ -52,6 +55,17 @@ namespace StudentEstimateServiceApi.Infrastructure.Services.InviteService
                 return OperationResult<string>.Fail("Wrong domain");
 
             return OperationResult<string>.Success($"https://{domain}/api/invites/accept?roomId={roomId}");
+        }
+
+        private static bool IsConflict(Room room, User user)
+        {
+            if (room.Users.Contains(user.Id) && !user.Rooms.Contains(room.Id))
+                return true;
+
+            if (room.OwnerId == user.Id && !user.CreatedRooms.Contains(room.Id))
+                return true;
+
+            return false;
         }
 
         private static bool IsUserInRoom(Room room, ObjectId user)

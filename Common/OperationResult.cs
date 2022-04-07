@@ -1,23 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
+﻿#pragma warning disable 108,114
 namespace StudentEstimateServiceApi.Common
 {
     public class OperationResult
     {
         public readonly string ErrorMessage;
+        public readonly int StatusCode;
 
-        public bool IsSuccess => isSuccess;
-        public bool IsError => !isSuccess;
+        public bool IsSuccess { get; }
 
-        private readonly bool isSuccess;
+        public bool IsError => !IsSuccess;
 
-        public OperationResult(bool isSuccess = false, string errorMessage = null)
+        public OperationResult(bool isSuccess = false, string errorMessage = null, int statusCode = 200)
         {
-            this.isSuccess = isSuccess;
+            IsSuccess = isSuccess;
             ErrorMessage = errorMessage;
+            StatusCode = statusCode;
         }
 
         public static OperationResult Success()
@@ -25,9 +22,9 @@ namespace StudentEstimateServiceApi.Common
             return new OperationResult(true);
         }
 
-        public static OperationResult Fail(string errorMessage)
+        public static OperationResult Fail(string errorMessage, int statusCode = 400)
         {
-            return new OperationResult(false, errorMessage);
+            return new OperationResult(false, errorMessage, statusCode);
         }
     }
 
@@ -35,8 +32,8 @@ namespace StudentEstimateServiceApi.Common
     {
         public readonly T Result;
 
-        public OperationResult(T result, bool isSuccess = false, string errorMessage = null)
-            : base(isSuccess, errorMessage)
+        public OperationResult(T result, bool isSuccess = false, string errorMessage = null, int statusCode = 200)
+            : base(isSuccess, errorMessage, statusCode)
         {
             Result = result;
         }
@@ -46,9 +43,9 @@ namespace StudentEstimateServiceApi.Common
             return new OperationResult<T>(result, true);
         }
 
-        public static OperationResult<T> Fail(string errorMessage)
+        public static OperationResult<T> Fail(string errorMessage, int statusCode = 400)
         {
-            return new OperationResult<T>(default, false, errorMessage);
+            return new OperationResult<T>(default, false, errorMessage, statusCode);
         }
     }
 }
