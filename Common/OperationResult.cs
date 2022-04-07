@@ -6,13 +6,14 @@ namespace StudentEstimateServiceApi.Common
         public readonly string ErrorMessage;
         public readonly int StatusCode;
 
-        public bool IsSuccess { get; }
+        public bool IsSuccess => isSuccess;
+        public bool IsError => !isSuccess;
 
-        public bool IsError => !IsSuccess;
+        private readonly bool isSuccess;
 
         public OperationResult(bool isSuccess = false, string errorMessage = null, int statusCode = 200)
         {
-            IsSuccess = isSuccess;
+            this.isSuccess = isSuccess;
             ErrorMessage = errorMessage;
             StatusCode = statusCode;
         }
