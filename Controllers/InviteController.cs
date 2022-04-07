@@ -1,5 +1,4 @@
-﻿using System.Net;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -27,11 +26,11 @@ namespace StudentEstimateServiceApi.Controllers
 
             if (userId == null)
                 return Unauthorized();
-            
+
             var acceptResult = await inviteService.Accept(roomId, userId.Value);
             if (acceptResult.IsError)
                 return StatusCode(acceptResult.StatusCode, acceptResult.ErrorMessage);
-            
+
             return Ok();
         }
     }

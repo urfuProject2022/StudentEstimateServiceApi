@@ -32,7 +32,7 @@ namespace StudentEstimateServiceApi.Repositories
             var user = await Collection.Find(filter).SingleOrDefaultAsync();
 
             return user == null // Возможно просто стоит возвращать null и на проверке в API кидать NotFound()
-                ? OperationResult<T>.Fail($"{typeof(T).Name} with id \"{id}\" is not found")
+                ? OperationResult<T>.Fail($"{typeof(T).Name} with id \"{id}\" is not found", 404)
                 : OperationResult<T>.Success(user);
         }
 

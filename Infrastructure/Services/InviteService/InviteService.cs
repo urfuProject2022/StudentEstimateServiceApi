@@ -22,12 +22,12 @@ namespace StudentEstimateServiceApi.Infrastructure.Services.InviteService
             var findRoomResult = await roomRepository.FindById(roomId);
 
             if (findRoomResult.IsError)
-                return OperationResult.Fail("Room not found");
+                return findRoomResult;
 
             var findUserResult = await userRepository.FindById(userId);
 
             if (findUserResult.IsError)
-                return OperationResult.Fail("User not found");
+                return findUserResult;
 
             var room = findRoomResult.Result;
             var user = findUserResult.Result;
