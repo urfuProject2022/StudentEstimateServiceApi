@@ -1,6 +1,12 @@
-﻿namespace StudentEstimateServiceApi.Infrastructure.Services.InviteService
+﻿using System.Threading.Tasks;
+using MongoDB.Bson;
+using StudentEstimateServiceApi.Common;
+
+namespace StudentEstimateServiceApi.Infrastructure.Services.InviteService
 {
-    interface IInviteService
+    public interface IInviteService
     {
+        OperationResult<string> GenerateInviteUrl(string domain, ObjectId roomId);
+        Task<OperationResult> Accept(string roomId, ObjectId userId);
     }
 }
