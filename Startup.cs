@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using System;
+using System.Reflection;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
@@ -6,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using StudentEstimateServiceApi.Infrastructure.Services.InviteService;
 using StudentEstimateServiceApi.Models;
 using StudentEstimateServiceApi.Models.DTO;
 using StudentEstimateServiceApi.Repositories;
@@ -35,10 +38,11 @@ namespace StudentEstimateServiceApi
             services.AddSingleton<IUserRepository, UserRepository>();
             services.AddSingleton<IRoomRepository, RoomRepository>();
             services.AddSingleton<IAuthRepository, AuthRepository>();
+            services.AddSingleton<IInviteService, InviteService>();
             services.AddSingleton<IAssignmentRepository, AssignmentRepository>();
 
             services.AddControllers();
-            
+
             services.AddAutoMapper(cfg =>
             {
                 cfg.CreateMap<User, UserDto>();
@@ -48,8 +52,8 @@ namespace StudentEstimateServiceApi
                 cfg.CreateMap<RegistrationDto, UserAuth>();
                 cfg.CreateMap<RegistrationDto, User>()
                     .ForMember(x => x.Role, opt => opt.MapFrom(src => src.IsAdmin ? Role.Admin : Role.User));
-            }, new System.Reflection.Assembly[0]);
-            
+            }, Array.Empty<Assembly>());
+
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(
                 options =>
                 {
@@ -57,10 +61,7 @@ namespace StudentEstimateServiceApi
                     options.Cookie.HttpOnly = false;
                 });
 
-            services.AddSpaStaticFiles(x =>
-            {
-                x.RootPath = "wwwroot";
-            });
+            services.AddSpaStaticFiles(x => { x.RootPath = "wwwroot"; });
 
             services.AddControllers().AddNewtonsoftJson();
         }
@@ -82,7 +83,7 @@ namespace StudentEstimateServiceApi
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
-            if (!env.IsDevelopment()) 
+            if (!env.IsDevelopment())
                 app.UseSpaStaticFiles();
 
             app.UseRouting();
@@ -90,12 +91,18 @@ namespace StudentEstimateServiceApi
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+
+            app.MapWhen(context => context.Request.Path.StartsWithSegments("/api"),
+                _ =>
+                {
+                    app.UseEndpoints(x => x.MapControllers());
+                });
+
             app.UseSpa(x =>
             {
                 x.Options.SourcePath = @"front";
-                
-                if (!env.IsProduction()) 
+
+                if (!env.IsProduction())
                     x.UseReactDevelopmentServer("start");
             });
         }
