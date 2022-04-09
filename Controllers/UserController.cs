@@ -28,12 +28,10 @@ namespace StudentEstimateServiceApi.Controllers
         public async Task<ActionResult<UserDto>> GetUserById([FromRoute] string userId)
         {
             var findResult = await userRepository.FindById(userId);
-            
-            //GetUserRooms - Идём в RoomRepository за комнатами по Id
 
             if (!findResult.IsSuccess)
             {
-                return BadRequest(findResult.ErrorMessage);
+                return NotFound(findResult.ErrorMessage);
             }
 
             var userDto = mapper.Map<UserDto>(findResult.Result);
@@ -46,13 +44,8 @@ namespace StudentEstimateServiceApi.Controllers
         {
             var user = mapper.Map<User>(userDto);
 
-            var createResult = await userRepository.Create(user);
-            if (!createResult.IsSuccess)
-            {
-                return BadRequest(createResult.ErrorMessage);
-            }
-            
-            var createdUserDto = mapper.Map<UserDto>(createResult.Result);
+            var createdUser = await userRepository.Create(user);
+            var createdUserDto = mapper.Map<UserDto>(createdUser);
 
             return Ok(createdUserDto);
         }

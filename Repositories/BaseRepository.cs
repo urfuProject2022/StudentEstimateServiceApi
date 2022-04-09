@@ -18,14 +18,14 @@ namespace StudentEstimateServiceApi.Repositories
 
             Collection = database.GetCollection<T>(collectionName);
         }
-        
+
         public Task<OperationResult<T>> FindById(string id)
         {
             if (id == null || !ObjectId.TryParse(id, out var objectId))
                 return Task.FromResult(OperationResult<T>.Fail("Wrong id format"));
             return FindById(objectId);
         }
-        
+
         public async Task<OperationResult<T>> FindById(ObjectId id)
         {
             var filter = new BsonDocument("_id", id);
@@ -36,10 +36,10 @@ namespace StudentEstimateServiceApi.Repositories
                 : OperationResult<T>.Success(user);
         }
 
-        public async Task<OperationResult<T>> Create(T item)
+        public async Task<T> Create(T item)
         {
             await Collection.InsertOneAsync(item);
-            return OperationResult<T>.Success(item);
+            return item;
         }
 
         public Task<OperationResult> Delete(string id)
@@ -48,7 +48,7 @@ namespace StudentEstimateServiceApi.Repositories
                 return Task.FromResult(OperationResult.Fail("Wrong id format"));
             return Delete(objectId);
         }
-        
+
         public async Task<OperationResult> Delete(ObjectId id)
         {
             var filter = new BsonDocument("_id", id);

@@ -39,12 +39,10 @@ namespace StudentEstimateServiceApi.Infrastructure.Services.InviteService
                 return OperationResult.Success();
 
             user.Rooms.Add(room.Id);
-            if ((await userRepository.Update(user)).IsError)
-                return OperationResult.Fail("Failed give access");
+            await userRepository.Update(user);
 
             room.Users.Add(userId);
-            if ((await roomRepository.Update(room)).IsError)
-                return OperationResult.Fail("Failed give access");
+            await roomRepository.Update(room);
 
             return OperationResult.Success();
         }
@@ -52,7 +50,7 @@ namespace StudentEstimateServiceApi.Infrastructure.Services.InviteService
         public OperationResult<string> GenerateInviteUrl(string domain, ObjectId roomId)
         {
             if (domain == null)
-                return OperationResult<string>.Fail("Wrong domain");
+                return OperationResult<string>.Fail("Wrong domain", 500);
 
             return OperationResult<string>.Success($"https://{domain}/api/invites/accept?roomId={roomId}");
         }

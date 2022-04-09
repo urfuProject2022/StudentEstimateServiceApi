@@ -1,11 +1,13 @@
-﻿using System.Threading.Tasks;
-using StudentEstimateServiceApi.Common;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using MongoDB.Bson;
 using StudentEstimateServiceApi.Models;
 
 namespace StudentEstimateServiceApi.Repositories.Interfaces
 {
-	public interface IRoomRepository : IBaseRepository<Room>
+    public interface IRoomRepository : IBaseRepository<Room>
     {
-        Task<OperationResult<Room>> Update(Room room);
+        public Task<IEnumerable<Room>> FindUserRooms(ObjectId userId);
+        public Task Update(Room room);
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using MongoDB.Driver;
@@ -13,7 +12,6 @@ namespace StudentEstimateServiceApi.Repositories
     {
         public AuthRepository(IMongoDatabaseSettings dbSettings) : base(dbSettings, dbSettings.AuthCollectionName)
         {
-
         }
 
         public async Task<UserAuth> FindFirst(Expression<Func<UserAuth, bool>> predicate)

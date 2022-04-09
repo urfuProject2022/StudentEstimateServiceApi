@@ -9,7 +9,7 @@ namespace StudentEstimateServiceApi.Models
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public ObjectId Id { get; set; }
-        
+
         public List<ObjectId> Rooms { get; set; } = new();
         public List<ObjectId> CreatedRooms { get; set; } = new();
         public Role Role { get; set; }
