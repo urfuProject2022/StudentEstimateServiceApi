@@ -1,5 +1,7 @@
 .auth {
     gap: 0.6em;
+    display: flex;
+    flex-direction: column;
 }
 
 .auth-card {

@@ -1,5 +1,5 @@
 import settings from "../settings.json";
-import {RegistrationDto} from "../Components/Authorization/Registration";
+import {RegistrationModel} from "../Components/Authorization/Registration";
 
 
 export const LoginRequest = (login: string, password: string) => {
@@ -12,7 +12,7 @@ export const LoginRequest = (login: string, password: string) => {
     });
 }
 
-export const RegistrationRequest = (registrationDto: RegistrationDto) => {
+export const RegistrationRequest = (registrationDto: RegistrationModel) => {
     return fetch(settings.serverEndpoint + "/auth/register", {
         method: 'POST',
         headers: new Headers({
