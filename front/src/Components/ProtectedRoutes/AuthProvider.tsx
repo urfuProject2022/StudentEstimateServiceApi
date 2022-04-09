@@ -1,60 +1,49 @@
-import React from "react";
-import {Auth} from "../../Utils/Login";
-import {getCookie} from "typescript-cookie";
-import {OperationResult} from "../../Utils/OperationResult";
-
-interface IUserCookieState {
-    HasCookie?: boolean,
-}
+import React, {useState} from "react";
+import {getCookie, removeCookie} from "typescript-cookie";
+import {LoginRequest, RegistrationRequest} from "../../Utils/Requests";
+import {RegistrationModel} from "../Authorization/Registration";
 
 interface AuthContextType {
-    userCookieState: IUserCookieState;
-    signIn: (login: string, password: string) => void;
-    signOut: () => void;
+    isAuthorized: boolean
+    signIn: (login: string, password: string) => Promise<Response>
+    signOut: () => void
+    register: (dto: RegistrationModel) => Promise<Response>
 }
 
 let AuthContext = React.createContext<AuthContextType>(null!);
 
 export function AuthProvider({children}: { children: React.ReactNode }) {
     let cookie = getCookie("auth");
-    let [user, setUser] = React.useState<IUserCookieState>({HasCookie: cookie !== undefined});
+    let [cookieState, setCookieState] = useState(cookie !== undefined);
 
-    let signInFunc = (login: string, password: string) => {
-        return SetUserByAuth(login, password, setUser);
-    };
+    let signIn = (login: string, password: string) => {
+        return LoginRequest(login, password)
+            .then(resp => {
+                if (resp.ok){
+                    setCookieState(true)
+                }
+                return resp
+            })
+    }
 
-    let signOutFunc = () => {
-        return;
-    };
+    let signOut = () => {
+        removeCookie("auth")
+        setCookieState(false)
+    }
 
-    let value: AuthContextType = {userCookieState: user, signIn: signInFunc, signOut: signOutFunc};
+    let register = (dto: RegistrationModel) => {
+        return RegistrationRequest(dto)
+            .then(resp => {
+                if (resp.ok){
+                    setCookieState(true)
+                }
+                return resp
+            })
+    }
+
+    let value: AuthContextType = {isAuthorized: cookieState, signIn: signIn, signOut: signOut, register: register};
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
-
-const SetUserByAuth = (login: string, password: string, setUser: React.Dispatch<React.SetStateAction<IUserCookieState>>): Promise<OperationResult> => {
-    let cookie = getCookie("auth");
-
-    if (!cookie)
-        return SetCookie(login, password);
-
-    const success: OperationResult = {IsSuccess: true};
-    return new Promise<OperationResult>(_ => success);
-
-}
-
-function SetCookie(login: string, password: string) {
-    return Auth(login, password)
-        .then(resp => resp.json())
-        .then(resp => {
-            if (resp.IsFail) {
-                const result: OperationResult = {IsSuccess: false, Message: resp.ErrorMessage};
-                return result;
-            }
-
-            const result: OperationResult = {IsSuccess: true, Message: undefined};
-            return result;
-        });
 }
 
 export function useAuth() {
