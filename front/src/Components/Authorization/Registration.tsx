@@ -1,11 +1,10 @@
 import React, {useState} from 'react';
 import '../../App.css';
-import {Button, Card, FormControlLabel, FormGroup, Radio, RadioGroup, TextField} from "@mui/material";
-import {RegistrationRequest} from "../../Utils/Requests";
+import {Button, Card, FormControlLabel, Radio, RadioGroup, TextField} from "@mui/material";
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../ProtectedRoutes/AuthProvider";
 
-export type RegistrationDto = {
+export type RegistrationModel = {
     Role: string,
     Login: string,
     Password: string,
@@ -13,7 +12,7 @@ export type RegistrationDto = {
 }
 
 export const Registration = () => {
-    const [dto, setDto] = useState<RegistrationDto>(
+    const [model, setModel] = useState<RegistrationModel>(
         {
             FullName: "",
             Role: "Admin",
@@ -27,26 +26,25 @@ export const Registration = () => {
     const auth = useAuth()
 
     const handleChange = (prop: string) => (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setDto({...dto, [prop]: event.target.value});
+        setModel({...model, [prop]: event.target.value});
     };
 
-    const onRegister = (dto: RegistrationDto) => {
-        RegistrationRequest(dto)
+    const onRegister = (model: RegistrationModel) => {
+        auth.register(model)
             .then(async resp => {
-            if (!resp.ok){
-                let errorMessage = await resp.text()
-                setErrorMessage(errorMessage)
-            }
-            else {
-                auth.setCookieState(true)
-                navigate("/")
-            }
+                if (!resp.ok){
+                    let errorMessage = await resp.text()
+                    setErrorMessage(errorMessage)
+                }
+                else {
+                    navigate("/rooms")
+                }
         })
     }
 
     return <div className="auth-container">
         <Card variant={"outlined"} className="auth-card" sx={{background: "#FAFAFA"}}>
-            <FormGroup  className="auth">
+            <div className="auth">
                 <TextField label="ФИО" onChange={handleChange("FullName")} id={"FullName"}/>
                 <TextField label="Логин" onChange={handleChange("Login")} id={"Login"}/>
                 <TextField label="Пароль" onChange={handleChange("Password")} type="password" id={"Password"}/>
@@ -55,16 +53,16 @@ export const Registration = () => {
                     row
                     aria-labelledby="demo-row-radio-buttons-group-label"
                     name="row-radio-buttons-group"
-                    value={dto.Role}
+                    value={model.Role}
                     onChange={handleChange("Role")}
                 >
                     <FormControlLabel value="Admin" control={<Radio/>} label="Admin"/>
                     <FormControlLabel value="User" control={<Radio/>} label="User"/>
                 </RadioGroup>
-                <Button onClick={() => onRegister(dto)}
+                <Button onClick={() => onRegister(model)}
                         variant="contained"
-                        disabled={!(dto.Password && dto.Login && dto.FullName)}>Зарегистрироваться</Button>
-            </FormGroup>
+                        disabled={!(model.Password && model.Login && model.FullName)}>Зарегистрироваться</Button>
+            </div>
             <div className="error">{errorMessage}</div>
         </Card>
     </div>

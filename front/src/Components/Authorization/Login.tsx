@@ -1,9 +1,8 @@
 import React, {useState} from 'react';
 import '../../App.css';
-import {Button, Card, FormGroup, TextField} from "@mui/material";
+import {Button, Card, TextField} from "@mui/material";
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../ProtectedRoutes/AuthProvider";
-import {LoginRequest} from  "../../Utils/Requests"
 import "../../Styles/Auth.css"
 
 const Login = () => {
@@ -15,22 +14,21 @@ const Login = () => {
     const navigate = useNavigate()
 
     const onLogin = () => {
-        LoginRequest(login, password)
+        auth.signIn(login, password)
             .then(async resp => {
                 if (!resp.ok){
                     let errorMessage = await resp.text()
                     setErrorMessage(errorMessage)
                 }
                 else {
-                    auth.setCookieState(true)
-                    navigate("/")
+                    navigate("/rooms")
                 }
             })
     }
 
     return <div className="auth-container">
         <Card variant={"outlined"} className="auth-card" sx={{background: "#FAFAFA"}}>
-            <FormGroup className="auth">
+            <div className="auth">
                 <TextField label="Логин"
                            autoFocus={true}
                            onChange={x => setLogin(x.target.value)}
@@ -46,7 +44,7 @@ const Login = () => {
                         onClick={() => navigate("/registration")}
                         type="submit">Регистрация</Button>
                 <div className="error">{errorMessage}</div>
-            </FormGroup>
+            </div>
         </Card>
     </div>
 }

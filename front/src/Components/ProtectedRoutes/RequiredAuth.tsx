@@ -6,7 +6,7 @@ export function RequireAuth({children}: { children: JSX.Element }) {
     let auth = useAuth();
     let location = useLocation();
 
-    if (!auth.cookieState) {
+    if (!auth.isAuthorized) {
         return <Navigate to="/login" state={{from: location}} replace/>;
     }
     return children;
