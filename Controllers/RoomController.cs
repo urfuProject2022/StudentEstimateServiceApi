@@ -73,25 +73,23 @@ namespace StudentEstimateServiceApi.Controllers
             else
                 return BadRequest();
 
-            room.Id = ObjectId.GenerateNewId();
             var findResult = await userRepository.FindById(room.OwnerId);
             var user = findResult.Result;
 
             if (user.Role != Role.Admin)
-                return
-                    BadRequest(
-                        "Only admins can create rooms!"); // На Forbid() выдаёт Exception - хочет, чтобы отсеивало через куки
+                return BadRequest("Only admins can create rooms!");
 
-            var createdRoom = await roomRepository.Create(room);
-            var inviteUrl = inviteService.GenerateInviteUrl(HttpContext.Request.Host.Value, createdRoom.Id);
+            room.Id = ObjectId.GenerateNewId();
+            var inviteUrl = inviteService.GenerateInviteUrl(HttpContext.Request.Host.Value, room.Id);
 
             if (inviteUrl.IsError)
-            {
                 return StatusCode(inviteUrl.StatusCode, inviteUrl.ErrorMessage);
-            }
 
-            createdRoom.Invite = inviteUrl.Result;
-            user.CreatedRooms.Add(createdRoom.Id);
+            room.Invite = inviteUrl.Result;
+            
+            var createdRoom = await roomRepository.Create(room);
+
+            user.CreatedRooms.Add(room.Id);
             await userRepository.Update(user);
 
             var createdRoomDto = mapper.Map<RoomDto>(createdRoom);
