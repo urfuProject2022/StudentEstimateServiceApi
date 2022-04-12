@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using StudentEstimateServiceApi.Common;
@@ -15,6 +14,7 @@ using StudentEstimateServiceApi.Repositories.Interfaces;
 namespace StudentEstimateServiceApi.Controllers
 {
     [Route(Route.Base + "/auth")]
+    [ApiController]
     public class AuthController : Controller
     {
         private readonly IAuthRepository authRepository;
@@ -33,7 +33,7 @@ namespace StudentEstimateServiceApi.Controllers
         {
             var userAuth = await authRepository.FindFirst(x => x.Login == login && x.Password == password);
 
-            if (userAuth == null) 
+            if (userAuth == null)
                 return BadRequest("Неверный логин или пароль");
 
             await SignIn(userAuth.UserId.ToString());
@@ -45,8 +45,8 @@ namespace StudentEstimateServiceApi.Controllers
         public async Task<ActionResult> Register([FromBody] RegistrationDto registrationDto)
         {
             var isUserExists = await authRepository.Any(x => x.Login == registrationDto.Login);
-            if (isUserExists) 
-                return BadRequest("Пользователь с таким логином уже есть");
+            if (isUserExists)
+                return BadRequest("Пользователь с таким логином уже существует");
 
             var id = ObjectId.GenerateNewId();
             var user = new User { Id = id };
@@ -68,7 +68,8 @@ namespace StudentEstimateServiceApi.Controllers
             {
                 new(ClaimsIdentity.DefaultNameClaimType, userId)
             };
-            var id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
+            var id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType,
+                ClaimsIdentity.DefaultRoleClaimType);
             return HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(id));
         }
     }

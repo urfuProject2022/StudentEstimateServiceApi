@@ -39,6 +39,7 @@ namespace StudentEstimateServiceApi
             services.AddSingleton<IRoomRepository, RoomRepository>();
             services.AddSingleton<IAuthRepository, AuthRepository>();
             services.AddSingleton<IInviteService, InviteService>();
+            services.AddSingleton<IAssignmentRepository, AssignmentRepository>();
 
             services.AddControllers();
 
@@ -49,8 +50,9 @@ namespace StudentEstimateServiceApi
                 cfg.CreateMap<Room, RoomDto>();
                 cfg.CreateMap<RoomDto, Room>();
                 cfg.CreateMap<RegistrationDto, UserAuth>();
-                cfg.CreateMap<RegistrationDto, User>()
-                    .ForMember(x => x.Role, opt => opt.MapFrom(src => src.IsAdmin ? Role.Admin : Role.User));
+                cfg.CreateMap<RegistrationDto, User>();
+                cfg.CreateMap<AssignmentDto, Assignment>();
+                cfg.CreateMap<Assignment, AssignmentDto>();
             }, Array.Empty<Assembly>());
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(
@@ -92,10 +94,7 @@ namespace StudentEstimateServiceApi
 
 
             app.MapWhen(context => context.Request.Path.StartsWithSegments("/api"),
-                _ =>
-                {
-                    app.UseEndpoints(x => x.MapControllers());
-                });
+                _ => { app.UseEndpoints(x => x.MapControllers()); });
 
             app.UseSpa(x =>
             {

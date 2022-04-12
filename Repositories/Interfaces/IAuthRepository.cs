@@ -5,9 +5,9 @@ using StudentEstimateServiceApi.Models;
 
 namespace StudentEstimateServiceApi.Repositories.Interfaces
 {
-	public interface IAuthRepository : IBaseRepository<UserAuth>
-	{
-		Task<UserAuth> FindFirst(Expression<Func<UserAuth, bool>> predicate);
-		Task<bool> Any(Expression<Func<UserAuth, bool>> predicate);
-	}
+    public interface IAuthRepository : IBaseRepository<UserAuth>
+    {
+        Task<UserAuth> FindFirst(Expression<Func<UserAuth, bool>> predicate);
+        Task<bool> Any(Expression<Func<UserAuth, bool>> predicate);
+    }
 }

@@ -5,9 +5,8 @@ using StudentEstimateServiceApi.Models;
 
 namespace StudentEstimateServiceApi.Repositories.Interfaces
 {
-    public interface IRoomRepository : IBaseRepository<Room>
+    public interface IAssignmentRepository : IBaseRepository<Assignment>
     {
-        public Task<IEnumerable<Room>> FindUserRooms(ObjectId userId);
-        public Task Update(Room room);
+        Task<IEnumerable<Assignment>> FindRoomAssignments(IEnumerable<ObjectId> assignmentIds);
     }
 }
