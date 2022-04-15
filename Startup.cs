@@ -8,12 +8,16 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using MongoDB.Driver;
+using MongoDB.Driver.GridFS;
 using StudentEstimateServiceApi.Infrastructure.Services.InviteService;
+using StudentEstimateServiceApi.Infrastructure.WorkFileProvider;
 using StudentEstimateServiceApi.Models;
 using StudentEstimateServiceApi.Models.DTO;
 using StudentEstimateServiceApi.Repositories;
 using StudentEstimateServiceApi.Repositories.Interfaces;
 using StudentEstimateServiceApi.Settings;
+using MongoDatabaseSettings = StudentEstimateServiceApi.Settings.MongoDatabaseSettings;
 
 namespace StudentEstimateServiceApi
 {
@@ -40,6 +44,7 @@ namespace StudentEstimateServiceApi
             services.AddSingleton<IAuthRepository, AuthRepository>();
             services.AddSingleton<IInviteService, InviteService>();
             services.AddSingleton<IAssignmentRepository, AssignmentRepository>();
+            services.AddSingleton<WorkFileProvider>();
 
             services.AddControllers();
 
