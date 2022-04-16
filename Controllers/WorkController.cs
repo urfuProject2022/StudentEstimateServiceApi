@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using StudentEstimateServiceApi.Common;
 using StudentEstimateServiceApi.Common.Extensions;
 using StudentEstimateServiceApi.Infrastructure.Services.WorkService;
-using StudentEstimateServiceApi.Infrastructure.WorkFileProvider;
 using StudentEstimateServiceApi.Models;
 using StudentEstimateServiceApi.Models.DTO;
 
@@ -38,7 +34,7 @@ namespace StudentEstimateServiceApi.Controllers
 
             if (submitOperationResult.IsError)
                 return StatusCode(submitOperationResult.StatusCode, submitOperationResult.ErrorMessage);
-            
+
             return Ok();
         }
     }

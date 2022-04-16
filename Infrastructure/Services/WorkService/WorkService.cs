@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 using StudentEstimateServiceApi.Common;
-using StudentEstimateServiceApi.Infrastructure.WorkFileProvider;
+using StudentEstimateServiceApi.Infrastructure.Providers.WorkFileProvider;
 using StudentEstimateServiceApi.Models;
-using StudentEstimateServiceApi.Repositories;
 using StudentEstimateServiceApi.Repositories.Interfaces;
 
 namespace StudentEstimateServiceApi.Infrastructure.Services.WorkService
@@ -17,7 +16,10 @@ namespace StudentEstimateServiceApi.Infrastructure.Services.WorkService
         private readonly IWorkRepository workRepository;
         private readonly IRoomRepository roomRepository;
 
-        public WorkService(IWorkFileProvider workFileProvider, IAssignmentRepository assignmentRepository, IWorkRepository workRepository, IRoomRepository roomRepository)
+        public WorkService(IWorkFileProvider workFileProvider,
+            IAssignmentRepository assignmentRepository,
+            IWorkRepository workRepository,
+            IRoomRepository roomRepository)
         {
             this.workFileProvider = workFileProvider;
             this.assignmentRepository = assignmentRepository;
@@ -27,25 +29,25 @@ namespace StudentEstimateServiceApi.Infrastructure.Services.WorkService
 
         public async Task<OperationResult> Submit(SubmitWork submitWork, ObjectId userId)
         {
-            var roomOperationResult =await roomRepository.FindById(submitWork.Id);
+            var roomOperationResult = await roomRepository.FindById(submitWork.RoomId);
             if (roomOperationResult.IsError)
                 return roomOperationResult;
 
             var room = roomOperationResult.Result;
-            
+
             if (room.OwnerId == userId)
                 return OperationResult.Fail("Admin can not submit work");
-            
+
             if (!room.Users.Contains(userId))
                 return OperationResult.Fail("Student not in room");
-            
-            var assignmentOperationResult =await assignmentRepository.FindById(submitWork.AssignmentId);
+
+            var assignmentOperationResult = await assignmentRepository.FindById(submitWork.AssignmentId);
 
             if (assignmentOperationResult.IsError)
                 return assignmentOperationResult;
 
             var assignment = assignmentOperationResult.Result;
-            
+
             if (IsAssignmentExpired(assignment.ExpirationTime))
                 return OperationResult.Fail("Assignment expired");
 
@@ -66,7 +68,7 @@ namespace StudentEstimateServiceApi.Infrastructure.Services.WorkService
 
         private async Task<bool> IsWorkExists(ObjectId userId, ObjectId assignmentId)
         {
-            return await workRepository.FindStudentWork(userId, assignmentId) !=null;
+            return await workRepository.FindStudentWork(userId, assignmentId) != null;
         }
 
         private static Work CreateWork(SubmitWork submitWork, List<ObjectId> fileAnswersId, ObjectId userId)

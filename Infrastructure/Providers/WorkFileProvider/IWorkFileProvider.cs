@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using MongoDB.Bson;
 
-namespace StudentEstimateServiceApi.Infrastructure.WorkFileProvider
+namespace StudentEstimateServiceApi.Infrastructure.Providers.WorkFileProvider
 {
     public interface IWorkFileProvider
     {

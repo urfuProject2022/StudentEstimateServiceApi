@@ -7,7 +7,7 @@ using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
 using StudentEstimateServiceApi.Settings;
 
-namespace StudentEstimateServiceApi.Infrastructure.WorkFileProvider
+namespace StudentEstimateServiceApi.Infrastructure.Providers.WorkFileProvider
 {
     public class WorkFileProvider : IWorkFileProvider
     {
