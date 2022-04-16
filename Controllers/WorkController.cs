@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using StudentEstimateServiceApi.Common;
 using StudentEstimateServiceApi.Common.Extensions;
 using StudentEstimateServiceApi.Infrastructure.Services.WorkService;
 using StudentEstimateServiceApi.Infrastructure.WorkFileProvider;
@@ -12,7 +13,7 @@ using StudentEstimateServiceApi.Models.DTO;
 
 namespace StudentEstimateServiceApi.Controllers
 {
-    [Route("api/work")]
+    [Route(Route.Base + "/work")]
     public class WorkController : Controller
     {
         private readonly IWorkService workService;

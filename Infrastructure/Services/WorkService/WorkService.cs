@@ -14,17 +14,31 @@ namespace StudentEstimateServiceApi.Infrastructure.Services.WorkService
     {
         private readonly IWorkFileProvider workFileProvider;
         private readonly IAssignmentRepository assignmentRepository;
-        private readonly WorkRepository workRepository;
+        private readonly IWorkRepository workRepository;
+        private readonly IRoomRepository roomRepository;
 
-        public WorkService(IWorkFileProvider workFileProvider, IAssignmentRepository assignmentRepository, WorkRepository workRepository)
+        public WorkService(IWorkFileProvider workFileProvider, IAssignmentRepository assignmentRepository, IWorkRepository workRepository, IRoomRepository roomRepository)
         {
             this.workFileProvider = workFileProvider;
             this.assignmentRepository = assignmentRepository;
             this.workRepository = workRepository;
+            this.roomRepository = roomRepository;
         }
 
-        public async Task<OperationResult> Submit(SubmitWork submitWork, ObjectId studentId)
+        public async Task<OperationResult> Submit(SubmitWork submitWork, ObjectId userId)
         {
+            var roomOperationResult =await roomRepository.FindById(submitWork.Id);
+            if (roomOperationResult.IsError)
+                return roomOperationResult;
+
+            var room = roomOperationResult.Result;
+            
+            if (room.OwnerId == userId)
+                return OperationResult.Fail("Admin can not submit work");
+            
+            if (!room.Users.Contains(userId))
+                return OperationResult.Fail("Student not in room");
+            
             var assignmentOperationResult =await assignmentRepository.FindById(submitWork.AssignmentId);
 
             if (assignmentOperationResult.IsError)
@@ -35,12 +49,12 @@ namespace StudentEstimateServiceApi.Infrastructure.Services.WorkService
             if (IsAssignmentExpired(assignment.ExpirationTime))
                 return OperationResult.Fail("Assignment expired");
 
-            if (await IsWorkExists(studentId, submitWork.AssignmentId))
-                return OperationResult.Fail("Work already exists", 403);
+            if (await IsWorkExists(userId, submitWork.AssignmentId))
+                return OperationResult.Fail("Work already exists");
 
             var fileAnswersId = await workFileProvider.UploadFiles(submitWork.FileAnswers);
 
-            var work = CreateWork(submitWork, fileAnswersId, studentId);
+            var work = CreateWork(submitWork, fileAnswersId, userId);
 
             assignment.Works.Add(work.Id);
             await assignmentRepository.Update(assignment);
@@ -55,14 +69,14 @@ namespace StudentEstimateServiceApi.Infrastructure.Services.WorkService
             return await workRepository.FindStudentWork(userId, assignmentId) !=null;
         }
 
-        private static Work CreateWork(SubmitWork submitWork, List<ObjectId> fileAnswersId, ObjectId studentId)
+        private static Work CreateWork(SubmitWork submitWork, List<ObjectId> fileAnswersId, ObjectId userId)
         {
             return new Work
             {
                 Assignment = submitWork.AssignmentId,
                 Id = ObjectId.GenerateNewId(),
                 FileAnswers = fileAnswersId,
-                StudentId = studentId,
+                UserId = userId,
                 ReceivedMarks = new List<ObjectId>(),
                 SettedMarks = new List<ObjectId>()
             };

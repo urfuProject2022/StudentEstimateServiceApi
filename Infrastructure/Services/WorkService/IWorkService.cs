@@ -7,6 +7,6 @@ namespace StudentEstimateServiceApi.Infrastructure.Services.WorkService
 {
     public interface IWorkService
     {
-        Task<OperationResult> Submit(SubmitWork submitWork, ObjectId studentId);
+        Task<OperationResult> Submit(SubmitWork submitWork, ObjectId userId);
     }
 }

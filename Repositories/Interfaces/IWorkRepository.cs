@@ -7,7 +7,7 @@ using StudentEstimateServiceApi.Models;
 
 namespace StudentEstimateServiceApi.Repositories.Interfaces
 {
-    public interface IWorkRepository
+    public interface IWorkRepository : IBaseRepository<Work>
     {
         Task<Work> FindStudentWork(ObjectId studentId, ObjectId assignmentId);
     }

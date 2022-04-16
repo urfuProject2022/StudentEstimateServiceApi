@@ -12,13 +12,13 @@ namespace StudentEstimateServiceApi.Repositories
 {
     public class WorkRepository : BaseRepository<Work>, IWorkRepository
     {
-        protected WorkRepository(IMongoDatabaseSettings dbSettings) : base(dbSettings, dbSettings.WorkCollectionName)
+        public WorkRepository(IMongoDatabaseSettings dbSettings) : base(dbSettings, dbSettings.WorkCollectionName)
         {
         }
 
         public Task<Work> FindStudentWork(ObjectId studentId, ObjectId assignmentId)
         {
-            var filter = Builders<Work>.Filter.Where(x => x.StudentId == studentId && x.Assignment == assignmentId);
+            var filter = Builders<Work>.Filter.Where(x => x.UserId == studentId && x.Assignment == assignmentId);
             return Collection.Find(filter).SingleOrDefaultAsync();
         }
     }

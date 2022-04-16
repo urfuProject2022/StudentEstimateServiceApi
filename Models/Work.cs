@@ -11,7 +11,7 @@ namespace StudentEstimateServiceApi.Models
     {
         [BsonId]
         public ObjectId Id { get; set; }
-        public ObjectId StudentId { get; set; }
+        public ObjectId UserId { get; set; }
         public ObjectId Assignment { get; set; }
         public List<ObjectId> FileAnswers { get; set; }
 

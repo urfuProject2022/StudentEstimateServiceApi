@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
 using StudentEstimateServiceApi.Infrastructure.Services.InviteService;
+using StudentEstimateServiceApi.Infrastructure.Services.WorkService;
 using StudentEstimateServiceApi.Infrastructure.WorkFileProvider;
 using StudentEstimateServiceApi.Models;
 using StudentEstimateServiceApi.Models.DTO;
@@ -44,7 +45,9 @@ namespace StudentEstimateServiceApi
             services.AddSingleton<IAuthRepository, AuthRepository>();
             services.AddSingleton<IInviteService, InviteService>();
             services.AddSingleton<IAssignmentRepository, AssignmentRepository>();
-            services.AddSingleton<WorkFileProvider>();
+            services.AddSingleton<IWorkRepository, WorkRepository>();
+            services.AddSingleton<IWorkFileProvider, WorkFileProvider>();
+            services.AddSingleton<IWorkService, WorkService>();
 
             services.AddControllers();
 
@@ -58,6 +61,7 @@ namespace StudentEstimateServiceApi
                 cfg.CreateMap<RegistrationDto, User>();
                 cfg.CreateMap<AssignmentDto, Assignment>();
                 cfg.CreateMap<Assignment, AssignmentDto>();
+                cfg.CreateMap<SubmitWorkDto, SubmitWork>();
             }, Array.Empty<Assembly>());
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(
