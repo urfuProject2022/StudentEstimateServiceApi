@@ -15,28 +15,34 @@ export const RoomItem: React.FC<{
             m: 1,
             bgcolor: '#FAFAFA',
             color: 'grey.800',
-            minWidth: "300px",
             boxShadow: '1',
+            minHeight: '20vh',
             borderRadius: 2,
+            display: 'flex',
             ":hover": {
                 cursor: 'pointer',
                 boxShadow: '3'
-            }
+            },
         }}>
         <div style={{
+            display: "flex",
+            height: '20vh',
+            width: '100%',
             flexDirection: 'column',
-            minWidth: '200px',
         }}>
             <h2 style={{
                 margin: 0,
                 padding: '10px',
-                textAlign: 'left'
+                flex: 1,
+                textOverflow: 'ellipsis',
+                overflow: 'hidden',
+                textAlign: 'left',
             }}>{room.name}</h2>
-            <Divider/>
+            <Divider />
             <p style={{
                 margin: 0,
                 padding: '10px',
-                textAlign: 'left'
+                textAlign: 'left',
             }}>Преподаватель: {room.ownerName}</p>
         </div>
     </Box>

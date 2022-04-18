@@ -7,6 +7,9 @@ import {AuthProvider} from "./Components/ProtectedRoutes/AuthProvider";
 import {Registration} from "./Components/Authorization/Registration";
 import {QueryClient, QueryClientProvider} from "react-query";
 import {DrawerLeft} from "./Components/Navigation/DrawerLeft";
+import axios from "axios";
+
+axios.defaults.baseURL = 'https://localhost:5001/api'
 
 const queryClient = new QueryClient({
     defaultOptions: {
