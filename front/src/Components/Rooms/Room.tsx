@@ -1,7 +1,9 @@
 ﻿import React from "react";
 import {Room} from "../../Models/Room";
-import {Box, Divider} from "@mui/material";
+import {Box} from "@mui/material";
 import {useNavigate} from "react-router-dom";
+import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
+import Typography from "@mui/material/Typography";
 
 export const RoomItem: React.FC<{
     room: Room;
@@ -12,38 +14,50 @@ export const RoomItem: React.FC<{
             navigate("/rooms/" + room.id)
         }}
         sx={{
-            m: 1,
-            bgcolor: '#FAFAFA',
-            color: 'grey.800',
-            boxShadow: '1',
-            minHeight: '20vh',
+            m: 0,
+            px: 3,
+            py: 2,
+            bgcolor: '#fcfcfc',
+            color: 'grey.900',
+            boxShadow: 0,
+            border: 'solid 2px #ECEFF1',
             borderRadius: 2,
-            display: 'flex',
             ":hover": {
                 cursor: 'pointer',
-                boxShadow: '3'
+                bgcolor: 'rgba(25, 118, 210, 0.08)',
+                boxShadow: 1
             },
         }}>
         <div style={{
             display: "flex",
-            height: '20vh',
             width: '100%',
-            flexDirection: 'column',
+            flexDirection: 'row',
+            alignItems: 'center',
         }}>
-            <h2 style={{
-                margin: 0,
-                padding: '10px',
-                flex: 1,
-                textOverflow: 'ellipsis',
-                overflow: 'hidden',
-                textAlign: 'left',
-            }}>{room.name}</h2>
-            <Divider />
-            <p style={{
-                margin: 0,
-                padding: '10px',
-                textAlign: 'left',
-            }}>Преподаватель: {room.ownerName}</p>
+            <div style={{
+                margin: '16px',
+                padding: 0,
+                flexGrow: 1,
+                display: "flex",
+                flexDirection: 'column',
+                justifyContent: 'space-between'
+            }}>
+                <Typography variant={"body1"} color={"#9E9E9E"}>Преподаватель: {room.ownerName}</Typography>
+                <Typography variant={"h4"} sx={{
+                    flex: 1,
+                    my: 2,
+                    textOverflow: 'ellipsis',
+                    overflow: 'hidden',
+                }}>{room.name}</Typography>
+
+                <Typography variant={"body1"} color={"#616161"}>
+                    Количество заданий: {room.assignments.length}
+                </Typography>
+            </div>
+            <ArrowForwardRoundedIcon sx={{
+                width: '36px',
+                height: '36px',
+            }}/>
         </div>
     </Box>
 }

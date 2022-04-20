@@ -21,3 +21,9 @@ export const RegistrationRequest = (registrationDto: RegistrationModel) => {
         body: JSON.stringify(registrationDto)
     })
 }
+
+export const SignedInUserRequest = () => {
+    return fetch(settings.serverEndpoint + "/users/me", {
+        method: 'GET'
+    })
+}

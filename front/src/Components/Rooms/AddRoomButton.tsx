@@ -7,7 +7,7 @@ import {useSaveRoomMutation} from "../../ApiHooks/roomsApiHooks";
 import "../../Styles/Modal.css"
 
 export const AddRoomButton: React.FC = () => {
-    const style = {
+    const modelStyle = {
         position: 'absolute' as 'absolute',
         top: '50%',
         left: '50%',
@@ -21,11 +21,12 @@ export const AddRoomButton: React.FC = () => {
 
     const [modalVisible, setModalVisible] = useState(false)
     const [roomName, setRoomName] = useState("")
+    const [roomDesc, setRoomDesc] = useState("")
 
     const saveMutation = useSaveRoomMutation()
 
-    const onSubmit = async (roomName: string) => {
-        let room: Room = {name: roomName}
+    const onSubmit = async (roomName: string, roomDescription: string) => {
+        let room: Room = {name: roomName, description: roomDescription} 
         await saveMutation.mutateAsync(room)
         setModalVisible(false)
     }
@@ -36,18 +37,20 @@ export const AddRoomButton: React.FC = () => {
                 setModalVisible(true);
             }}
             sx={{
-                m: 1,
+                m: 0,
                 minHeight: '20vh',
                 bgcolor: '#FAFAFA',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: 'grey.800',
-                boxShadow: '1',
+                border: 'dashed #42a5f5',
+                opacity: '0.5',
                 borderRadius: 2,
+                boxShadow: 0,
                 ":hover": {
                     cursor: 'pointer',
-                    boxShadow: '3'
+                    opacity: '1',
+                    boxShadow: 1
                 }
             }}>
             <AddRoundedIcon sx={{
@@ -61,18 +64,23 @@ export const AddRoomButton: React.FC = () => {
             onClose={() => {
                 setModalVisible(false)
             }}>
-            <Box className="modal" sx={style}>
+            <Box className="modal" sx={modelStyle}>
                 <Typography id="modal-modal-title" variant="h6" component="h2">
-                    Введите название комнаты
+                    Создание комнаты
                 </Typography>
                 <TextField
                     label={"Название"}
                     onChange={x => setRoomName(x.target.value)}
                     id={"login"}
                     autoFocus={true}/>
+                <TextField
+                    label={"Описание"}
+                    onChange={x => setRoomDesc(x.target.value)}
+                    id={"desc"} />
+
                 <Button variant={"contained"}
                         disabled={!roomName}
-                        onClick={async () => await onSubmit(roomName)}
+                        onClick={async () => await onSubmit(roomName, roomDesc)}
                         type="submit">
                     Создать
                 </Button>
