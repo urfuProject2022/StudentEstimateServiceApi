@@ -1,5 +1,7 @@
 ﻿using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StudentEstimateServiceApi.Common;
 using StudentEstimateServiceApi.Common.Extensions;
@@ -10,6 +12,7 @@ using StudentEstimateServiceApi.Models.DTO;
 namespace StudentEstimateServiceApi.Controllers
 {
     [Route(Route.Base + "/work")]
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class WorkController : Controller
     {
         private readonly IWorkService workService;
@@ -26,7 +29,7 @@ namespace StudentEstimateServiceApi.Controllers
         {
             var userId = HttpContext.GetUserId();
 
-            if (userId.HasValue == false)
+            if (!userId.HasValue)
                 return BadRequest();
 
             var submitWork = mapper.Map<SubmitWork>(submitWorkDto);
