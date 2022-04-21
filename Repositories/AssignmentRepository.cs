@@ -21,5 +21,10 @@ namespace StudentEstimateServiceApi.Repositories
             var assignments = await Collection.Find(a => assignmentIds.Contains(a.Id)).ToListAsync();
             return assignments;
         }
+
+        public Task Update(Assignment assignment)
+        {
+            return Collection.ReplaceOneAsync(x => x.Id == assignment.Id, assignment);
+        }
     }
 }
