@@ -3,5 +3,5 @@
     name: string,
     ownerName?: string,
     description: string
-    assignments: string[]
+    assignments?: string[]
 }

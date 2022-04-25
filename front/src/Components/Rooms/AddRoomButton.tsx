@@ -7,7 +7,7 @@ import {useSaveRoomMutation} from "../../ApiHooks/roomsApiHooks";
 import "../../Styles/Modal.css"
 
 export const AddRoomButton: React.FC = () => {
-    const modelStyle = {
+    const modalStyle = {
         position: 'absolute' as 'absolute',
         top: '50%',
         left: '50%',
@@ -64,7 +64,7 @@ export const AddRoomButton: React.FC = () => {
             onClose={() => {
                 setModalVisible(false)
             }}>
-            <Box className="modal" sx={modelStyle}>
+            <Box className="modal" sx={modalStyle}>
                 <Typography id="modal-modal-title" variant="h6" component="h2">
                     Создание комнаты
                 </Typography>

@@ -18,10 +18,11 @@ import {RoomList} from "../Rooms/RoomList";
 import {AccountBox} from "@mui/icons-material";
 import {useAuth} from "../ProtectedRoutes/AuthProvider";
 import {Button, ListItemButton} from "@mui/material";
+import {RoomInnerPage} from "../Rooms/RoomInnerPage";
 
 const drawerWidth = 240;
 
-export const DrawerLeft: React.FC = () => {
+export const DrawerNavigation: React.FC = () => {
     const auth = useAuth()
     const listItemStyle = {px: 3};
 
@@ -107,7 +108,7 @@ export const DrawerLeft: React.FC = () => {
                 <Route path="profile" element={<div>Profile page</div>}/>
                 <Route path="assignments" element={<div>Assignment page</div>}/>
                 <Route path="rooms" element={<RequireAuth><RoomList/></RequireAuth>}/>
-                <Route path="rooms/:roomId" element={<div>Room inner page</div>}/>
+                <Route path="rooms/:roomId" element={<RoomInnerPage/>}/>
                 <Route path="/" element={<Navigate to="/rooms" replace/>}/>
             </Routes>
 

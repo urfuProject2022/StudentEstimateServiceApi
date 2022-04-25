@@ -6,7 +6,7 @@ import {RequireAuth} from "./Components/ProtectedRoutes/RequiredAuth";
 import {AuthProvider} from "./Components/ProtectedRoutes/AuthProvider";
 import {Registration} from "./Components/Authorization/Registration";
 import {QueryClient, QueryClientProvider} from "react-query";
-import {DrawerLeft} from "./Components/Navigation/DrawerLeft";
+import {DrawerNavigation} from "./Components/Navigation/DrawerNavigation";
 import axios from "axios";
 
 axios.defaults.baseURL = 'https://localhost:5001/api'
@@ -26,7 +26,7 @@ function App() {
                 <Routes>
                     <Route path="login" element={<Login/>}/>
                     <Route path="registration" element={<Registration/>}/>
-                    <Route path="/*" element={<RequireAuth><DrawerLeft/></RequireAuth>}/>
+                    <Route path="/*" element={<RequireAuth><DrawerNavigation/></RequireAuth>}/>
                 </Routes>
             </QueryClientProvider>
         </AuthProvider>

@@ -11,6 +11,14 @@ export const useRoomsQuery = () => {
     })
 }
 
+export const useRoomQuery = (roomId: string) => {
+    return useQuery<Room, AxiosError>(["rooms", {roomId}], async () => {
+        await delay(1500)
+        const res = await axios.get(`/rooms/${roomId}`)
+        return res.data
+    })
+}
+
 export const useSaveRoomMutation = () =>{
     const queryClient = useQueryClient()
 

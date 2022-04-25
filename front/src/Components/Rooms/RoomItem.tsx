@@ -11,7 +11,7 @@ export const RoomItem: React.FC<{
     const navigate = useNavigate()
     return <Box
         onClick={() => {
-            navigate("/rooms/" + room.id)
+            navigate(`/rooms/${room.id}`, {state: room})
         }}
         sx={{
             m: 0,
