@@ -27,7 +27,7 @@ const Login = () => {
     }
 
     return <div className="auth-container">
-        <Card variant={"outlined"} className="auth-card" sx={{background: "#FAFAFA"}}>
+        <Card variant="outlined" className="auth-card" sx={{background: "#FAFAFA"}}>
             <div className="auth">
                 <TextField label="Логин"
                            autoFocus={true}
@@ -40,7 +40,7 @@ const Login = () => {
                 <Button onClick={() => onLogin()}
                         variant="contained"
                         disabled={!login || !password}>Войти</Button>
-                <Button variant={"outlined"}
+                <Button variant="outlined"
                         onClick={() => navigate("/registration")}
                         type="submit">Регистрация</Button>
                 <div className="error">{errorMessage}</div>

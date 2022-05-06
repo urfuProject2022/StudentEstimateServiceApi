@@ -1,25 +1,32 @@
 ﻿import React from "react";
-import {RoomItem} from "./Room";
+import {RoomItem} from "./RoomItem";
 import {Room} from "../../Models/Room";
-import {Box} from "@mui/material";
+import {CircularProgress} from "@mui/material";
+import {useRoomsQuery} from "../../ApiHooks/roomsApiHooks";
+import {AddRoomButton} from "./AddRoomButton";
+import {CircularProgressStyle} from "../../Styles/SxStyles";
+
 
 export const RoomList: React.FC = () => {
-    const room: Room = {name: "Тестовая комната", id: "123", ownerName: "Иван Иванович"}
-    return <Box
-        sx={{
+    const {data: rooms, isLoading} = useRoomsQuery()
+
+    return <div
+        style={{
+            padding: '16px',
+            margin: "0px",
             display: 'flex',
-            flexWrap: 'wrap',
-            justifyContent: 'space-between',
-            p: 1,
-            m: 1,
-            bgcolor: '#f0f2f5',
-            borderRadius: 1,
+            flexDirection: 'column',
+            backgroundColor: '#FFF',
+            gap: '10px'
         }}>
-        <RoomItem room={room}/>
-        <RoomItem room={room}/>
-        <RoomItem room={room}/>
-        <RoomItem room={room}/>
-        <RoomItem room={room}/>
-        <RoomItem room={room}/>
-    </Box>
+
+        {isLoading ? <CircularProgress sx={CircularProgressStyle}/> :
+            <>
+                {rooms!.map((room: Room) =>
+                <RoomItem key={room.id} room={room}/>)}
+                <AddRoomButton key={"add-button-key"}/>
+            </>
+        }
+
+    </div>
 }
