@@ -14,6 +14,8 @@ namespace StudentEstimateServiceApi.Models
         public string Name { get; set; }
         public List<ObjectId> Users { get; set; } = new();
         public ObjectId OwnerId { get; set; }
-        public string Invite { get; set; }
+        public string OwnerName { get; set; }
+        public string Description { get; set; }
+        public string InviteLink { get; set; }
     }
 }

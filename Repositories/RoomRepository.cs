@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using MongoDB.Bson;
 using MongoDB.Driver;
 using StudentEstimateServiceApi.Models;
 using StudentEstimateServiceApi.Repositories.Interfaces;
@@ -14,10 +13,11 @@ namespace StudentEstimateServiceApi.Repositories
         {
         }
 
-        public async Task<IEnumerable<Room>> FindUserRooms(ObjectId userId)
+        public async Task<IEnumerable<Room>> FindUserRooms(User user)
         {
-            var rooms = await Collection.Find(room => room.OwnerId == userId)
-                .ToListAsync(); // TODO: add Mongo index to "ownerId" field
+            var rooms = await Collection
+                .Find(room => user.Rooms.Contains(room.Id) || user.CreatedRooms.Contains(room.Id))
+                .ToListAsync();
             return rooms;
         }
 
