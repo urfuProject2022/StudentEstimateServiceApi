@@ -1,9 +1,12 @@
 import React from "react";
 import {useParams} from "react-router-dom";
-import {CircularProgress} from "@mui/material";
+import {CircularProgress, Stack} from "@mui/material";
 import {CircularProgressStyle} from "../../Styles/SxStyles";
 import {useRoomQuery} from "../../ApiHooks/roomsApiHooks";
 import Typography from "@mui/material/Typography";
+import {UserList} from "../Users/UserList";
+import {AssignmentList} from "../Assignments/AssignmentList";
+import {RoomOwnerCard} from "./RoomOwnerCard";
 
 export const RoomInnerPage: React.FC = () => {
     const {roomId} = useParams()
@@ -11,15 +14,14 @@ export const RoomInnerPage: React.FC = () => {
 
     return <div>
         {isLoading ? <CircularProgress sx={CircularProgressStyle}/> :
-            <div style={{
-                display: 'flex',
-                gap: '10px',
-                flexDirection: 'column'
-            }}>
-                <Typography variant={"h4"}>{room.name}</Typography>
+            <Stack spacing={2}>
+                <Typography variant={"h3"}>{room.name}</Typography>
                 <Typography variant={"h5"}>{room.description}</Typography>
-
-
-            </div>}
+                <AssignmentList roomId={roomId}/>
+                <Stack direction={"row"} spacing={2} justifyContent={"space-evenly"}>
+                    <UserList roomId={roomId} inviteLink={room.inviteLink}/>
+                    <RoomOwnerCard ownerName={room.ownerName}/>
+                </Stack>
+            </Stack>}
     </div>
 }

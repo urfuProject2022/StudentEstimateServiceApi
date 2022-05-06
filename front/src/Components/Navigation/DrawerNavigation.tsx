@@ -13,12 +13,12 @@ import ListItemText from '@mui/material/ListItemText';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import GroupIcon from '@mui/icons-material/Group';
 import {Link, Navigate, Route, Routes} from "react-router-dom";
-import {RequireAuth} from "../ProtectedRoutes/RequiredAuth";
 import {RoomList} from "../Rooms/RoomList";
 import {AccountBox} from "@mui/icons-material";
 import {useAuth} from "../ProtectedRoutes/AuthProvider";
 import {Button, ListItemButton} from "@mui/material";
 import {RoomInnerPage} from "../Rooms/RoomInnerPage";
+import {AssignmentPage} from "../Assignments/AssignmentPage";
 
 const drawerWidth = 240;
 
@@ -107,8 +107,9 @@ export const DrawerNavigation: React.FC = () => {
             <Routes>
                 <Route path="profile" element={<div>Profile page</div>}/>
                 <Route path="assignments" element={<div>Assignment page</div>}/>
-                <Route path="rooms" element={<RequireAuth><RoomList/></RequireAuth>}/>
+                <Route path="rooms" element={<RoomList/>}/>
                 <Route path="rooms/:roomId" element={<RoomInnerPage/>}/>
+                <Route path="rooms/:roomId/assignments/:assignmentId" element={<AssignmentPage/>}/>
                 <Route path="/" element={<Navigate to="/rooms" replace/>}/>
             </Routes>
 

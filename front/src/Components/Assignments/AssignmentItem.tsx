@@ -1,21 +1,26 @@
-﻿import React from "react";
-import {Room} from "../../Models/Room";
+import React, {useMemo} from "react";
 import {Card} from "@mui/material";
-import {useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
 import Typography from "@mui/material/Typography";
+import {Assignment} from "../../Models/Assignment";
+import {format} from 'date-fns-tz'
+import {parseISO} from "date-fns";
 
-export const RoomItem: React.FC<{
-    room: Room;
-}> = ({room}) => {
+export const AssignmentItem: React.FC<{
+    assignment: Assignment;
+}> = ({assignment}) => {
     const navigate = useNavigate()
+    const location = useLocation()
+    const utcDate = useMemo(() => format(parseISO(assignment.expirationTime), 'dd.MM.yyyy HH:mm'), [assignment])
+
     return <Card
         onClick={() => {
-            navigate(`/rooms/${room.id}`)
+            navigate(`${location.pathname}/assignments/${assignment.id}`)
         }}
         sx={{
             m: 0,
-            px: 3,
+            px: 2,
             py: 2,
             bgcolor: '#fcfcfc',
             color: 'grey.900',
@@ -40,18 +45,16 @@ export const RoomItem: React.FC<{
                 flexGrow: 1,
                 display: "flex",
                 flexDirection: 'column',
-                justifyContent: 'space-between'
+                justifyContent: 'center'
             }}>
-                <Typography variant={"body1"} color={"#9E9E9E"}>Преподаватель: {room.ownerName}</Typography>
-                <Typography variant={"h4"} sx={{
+                <Typography gutterBottom variant={"h5"} sx={{
                     flex: 1,
-                    my: 2,
                     textOverflow: 'ellipsis',
                     overflow: 'hidden',
-                }}>{room.name}</Typography>
+                }}>{assignment.title}</Typography>
 
                 <Typography variant={"body1"} color={"#616161"}>
-                    Количество заданий: {room.assignments.length}
+                    Дедлайн: {utcDate}
                 </Typography>
             </div>
             <ArrowForwardRoundedIcon sx={{

@@ -1,5 +1,5 @@
 import settings from "../settings.json";
-import {RegistrationModel} from "../Components/Authorization/Registration";
+import {RegistrationModel} from "../Models/RegistrationModel";
 
 
 export const LoginRequest = (login: string, password: string) => {

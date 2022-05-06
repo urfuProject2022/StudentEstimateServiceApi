@@ -4,4 +4,5 @@
     ownerName?: string,
     description: string
     assignments?: string[]
+    inviteLink?: string
 }

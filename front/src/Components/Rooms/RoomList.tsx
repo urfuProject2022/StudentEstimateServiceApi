@@ -20,10 +20,13 @@ export const RoomList: React.FC = () => {
             gap: '10px'
         }}>
 
-        {isLoading ? <CircularProgress sx={CircularProgressStyle}/> : rooms!.map((room: Room) =>
-            <RoomItem key={room.id} room={room}/>)
+        {isLoading ? <CircularProgress sx={CircularProgressStyle}/> :
+            <>
+                {rooms!.map((room: Room) =>
+                <RoomItem key={room.id} room={room}/>)}
+                <AddRoomButton key={"add-button-key"}/>
+            </>
         }
-        {!isLoading && <AddRoomButton key={"add-button-key"}/>}
 
     </div>
 }

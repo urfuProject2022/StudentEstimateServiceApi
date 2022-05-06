@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {getCookie, removeCookie} from "typescript-cookie";
 import {LoginRequest, RegistrationRequest, SignedInUserRequest} from "../../Utils/Requests";
-import {RegistrationModel} from "../Authorization/Registration";
 import {User} from "../../Models/User";
+import {RegistrationModel} from "../../Models/RegistrationModel";
 
 interface AuthContextType {
     isAuthorized: boolean
