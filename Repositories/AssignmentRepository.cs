@@ -18,8 +18,7 @@ namespace StudentEstimateServiceApi.Repositories
 
         public async Task<IEnumerable<Assignment>> FindRoomAssignments(IEnumerable<ObjectId> assignmentIds)
         {
-            var assignments = await Collection.Find(a => assignmentIds.Contains(a.Id)).ToListAsync();
-            return assignments;
+            return await Collection.Find(a => assignmentIds.Contains(a.Id)).ToListAsync();
         }
 
         public Task Update(Assignment assignment)

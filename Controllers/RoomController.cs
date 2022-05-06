@@ -55,8 +55,15 @@ namespace StudentEstimateServiceApi.Controllers
 
             if (!userId.HasValue)
                 return BadRequest();
+            
+            var userFindResult = await userRepository.FindById(userId.Value);
 
-            var rooms = await roomRepository.FindUserRooms(userId.Value);
+            if (!userFindResult.IsSuccess)
+            {
+                return NotFound(userFindResult.ErrorMessage);
+            }
+
+            var rooms = await roomRepository.FindUserRooms(userFindResult.Result);
             var roomsDto = mapper.Map<IEnumerable<RoomDto>>(rooms);
 
             return Ok(roomsDto);
@@ -80,12 +87,14 @@ namespace StudentEstimateServiceApi.Controllers
                 return BadRequest("Only admins can create rooms!");
 
             room.Id = ObjectId.GenerateNewId();
+            room.OwnerName = user.FullName;
+            
             var inviteUrl = inviteService.GenerateInviteUrl(HttpContext.Request.Host.Value, room.Id);
 
             if (inviteUrl.IsError)
                 return StatusCode(inviteUrl.StatusCode, inviteUrl.ErrorMessage);
 
-            room.Invite = inviteUrl.Result;
+            room.InviteLink = inviteUrl.Result;
             
             var createdRoom = await roomRepository.Create(room);
 
