@@ -1,7 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using StudentEstimateServiceApi.Common;
+using StudentEstimateServiceApi.Models;
 using StudentEstimateServiceApi.Repositories.Interfaces;
 using StudentEstimateServiceApi.Settings;
 
@@ -56,6 +59,12 @@ namespace StudentEstimateServiceApi.Repositories
             return deleteResult.IsAcknowledged && deleteResult.DeletedCount == 1
                 ? OperationResult.Success()
                 : OperationResult.Fail($"An error occurred while deleting {typeof(T).Name} with id {id}");
+        }
+
+        public async Task<T> FindFirst(Expression<Func<T, bool>> predicate)
+        {
+            var findResult = await Collection.Find(predicate).FirstOrDefaultAsync();
+            return findResult;
         }
     }
 }

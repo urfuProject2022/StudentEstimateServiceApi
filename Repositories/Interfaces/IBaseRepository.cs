@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 using MongoDB.Bson;
 using StudentEstimateServiceApi.Common;
 
@@ -11,5 +13,6 @@ namespace StudentEstimateServiceApi.Repositories.Interfaces
         Task<T> Create(T item);
         Task<OperationResult> Delete(string id);
         Task<OperationResult> Delete(ObjectId id);
+        Task<T> FindFirst(Expression<Func<T, bool>> predicate);
     }
 }

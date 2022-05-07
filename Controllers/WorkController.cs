@@ -40,5 +40,20 @@ namespace StudentEstimateServiceApi.Controllers
 
             return Ok();
         }
+
+        [HttpGet("to-grade")]
+        public async Task<ActionResult> GetWorkToGrade(GetWorksToGradeDto dto)
+        {
+            var userId = HttpContext.GetUserId();
+
+            if (!userId.HasValue)
+                return BadRequest();
+
+            var worksToGradeDto = mapper.Map<GetWorksToGrade>(dto);
+
+            var worksToGradeOperationResult = await workService.GetWorksToGrade(worksToGradeDto, userId.Value);
+
+            return worksToGradeOperationResult.ToApiResponse();
+        }
     }
 }

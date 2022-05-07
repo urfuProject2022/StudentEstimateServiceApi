@@ -64,6 +64,8 @@ namespace StudentEstimateServiceApi.Controllers
         public async Task<ActionResult<AssignmentDto>> CreateAssignment([FromBody] AssignmentDto assignmentDto,
             [FromRoute] string roomId)
         {
+            assignmentDto.MaxGradeCountForWork ??= Constants.MaxGradeCountForWork;
+            assignmentDto.MinGradeCountForWork ??= Constants.MinGradeCountForWork;
             var roomFindResult = await roomRepository.FindById(roomId);
 
             if (!roomFindResult.IsSuccess)

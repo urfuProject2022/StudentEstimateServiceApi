@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -12,6 +13,7 @@ namespace StudentEstimateServiceApi.Infrastructure.Providers.WorkFileProvider
     public class WorkFileProvider : IWorkFileProvider
     {
         private readonly IGridFSBucket gridFsClient;
+        private const string ContentType = "ContentType";
 
         public WorkFileProvider(IMongoDatabaseSettings mongoSettings)
         {
@@ -33,7 +35,7 @@ namespace StudentEstimateServiceApi.Infrastructure.Providers.WorkFileProvider
             var options = new GridFSUploadOptions();
             var metaData = new Dictionary<string, string>
             {
-                { "ContentType", file.ContentType }
+                { ContentType, file.ContentType }
             };
             options.Metadata = new BsonDocument(metaData);
 
@@ -44,6 +46,24 @@ namespace StudentEstimateServiceApi.Infrastructure.Providers.WorkFileProvider
             sourceReadStream.Close();
 
             return fileId;
+        }
+
+        public List<(byte[], string)> GetFilesWithMetaData(IEnumerable<ObjectId> filesId)
+        {
+            var filter = Builders<GridFSFileInfo<ObjectId>>.Filter.In(x => x.Id, filesId);
+            var filesMetaData =  gridFsClient.Find(filter).ToList();
+
+           return filesMetaData.Select(GetFileInfo).ToList();
+        }
+
+        private (byte[] file, string fileType) GetFileInfo(GridFSFileInfo<ObjectId> fileInfo)
+        {
+            if (!fileInfo.Metadata.TryGetValue(ContentType, out var contentType))
+                contentType = null;
+
+            var bytes = gridFsClient.DownloadAsBytes(fileInfo.Id);
+
+            return (bytes, contentType?.AsString);
         }
     }
 }
