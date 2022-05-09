@@ -3,6 +3,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 using StudentEstimateServiceApi.Common;
 using StudentEstimateServiceApi.Common.Extensions;
 using StudentEstimateServiceApi.Infrastructure.Services.WorkService;
@@ -54,6 +55,22 @@ namespace StudentEstimateServiceApi.Controllers
             var worksToGradeOperationResult = await workService.GetWorksToGrade(worksToGradeDto, userId.Value);
 
             return worksToGradeOperationResult.ToApiResponse();
+        }
+
+        [HttpGet("user-works")]
+        public async Task<ActionResult> GetUsersWorks([FromHeader] string assignment)
+        {
+            var userId = HttpContext.GetUserId();
+
+            if (!userId.HasValue)
+                return BadRequest();
+
+            if (!ObjectId.TryParse(assignment, out var assignmentId))
+                return BadRequest();
+            
+
+            var userWork = await workService.GetUserWork(assignmentId, userId.Value);
+            return userWork.ToApiResponse();
         }
     }
 }
