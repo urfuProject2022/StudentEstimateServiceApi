@@ -6,8 +6,8 @@ namespace StudentEstimateServiceApi.Common.Extensions
     {
         public static OperationResult<T> ToOperationResult<T>(this OperationResult value)
         {
-            return value.IsError 
-                ? OperationResult<T>.Fail(value.ErrorMessage, value.StatusCode) 
+            return value.IsError
+                ? OperationResult<T>.Fail(value.ErrorMessage, value.StatusCode)
                 : OperationResult<T>.Success(default);
         }
 
@@ -15,7 +15,7 @@ namespace StudentEstimateServiceApi.Common.Extensions
         {
             object data = value.IsError ? value.ErrorMessage : value.Result;
 
-            return new ObjectResult(data??"")
+            return new ObjectResult(data ?? "")
             {
                 StatusCode = value.StatusCode
             };

@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using MongoDB.Driver;
 using StudentEstimateServiceApi.Models;
 using StudentEstimateServiceApi.Repositories.Interfaces;
@@ -15,13 +14,14 @@ namespace StudentEstimateServiceApi.Repositories
 
         public Grade FindGrade(ObjectId workId, ObjectId studentSetterId)
         {
-            var filter = Builders<Grade>.Filter.Where(x => x.GradedWorkId == workId && x.GradedByUser == studentSetterId);
+            var filter =
+                Builders<Grade>.Filter.Where(x => x.GradedWorkId == workId && x.GradedByUser == studentSetterId);
             return Collection.Find(filter).SingleOrDefault();
         }
 
         public long GetGradesSettedByUser(ObjectId user, ObjectId assignmentId)
         {
-            var filter = Builders<Grade>.Filter.Where(x =>  x.GradedByUser == user && x.AssignmentId == assignmentId);
+            var filter = Builders<Grade>.Filter.Where(x => x.GradedByUser == user && x.AssignmentId == assignmentId);
             return Collection.Find(filter).CountDocuments();
         }
     }

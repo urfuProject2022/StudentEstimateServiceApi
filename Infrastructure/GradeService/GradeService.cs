@@ -17,7 +17,8 @@ namespace StudentEstimateServiceApi.Infrastructure.Services
         private readonly IAssignmentRepository assignmentRepository;
         private readonly IMapper mapper;
 
-        public GradeService(IGradeRepository gradeRepository,IWorkRepository workRepository,IAssignmentRepository assignmentRepository, IMapper mapper)
+        public GradeService(IGradeRepository gradeRepository, IWorkRepository workRepository,
+            IAssignmentRepository assignmentRepository, IMapper mapper)
         {
             this.gradeRepository = gradeRepository;
             this.workRepository = workRepository;
@@ -37,14 +38,14 @@ namespace StudentEstimateServiceApi.Infrastructure.Services
 
             if (userSetterWork == null)
                 return OperationResult.Fail("Work should be submitted before grading other works");
-            
+
             var workForGradeOperationResult = await workRepository.FindById(dto.GradedWorkId);
 
             if (workForGradeOperationResult.IsError)
                 return workForGradeOperationResult;
 
             var workForGrade = workForGradeOperationResult.Result;
-            var assignmentOperationResult =await assignmentRepository.FindById(workForGrade.Assignment);
+            var assignmentOperationResult = await assignmentRepository.FindById(workForGrade.Assignment);
 
             if (assignmentOperationResult.IsError)
                 return assignmentOperationResult;
@@ -61,6 +62,7 @@ namespace StudentEstimateServiceApi.Infrastructure.Services
 
             grade.GradedByUser = user;
             await gradeRepository.Create(grade);
+
             workForGrade.ReceivedMarks.Add(grade.Id);
             workForGrade.GradedBy.Add(user);
             await workRepository.Update(workForGrade);

@@ -1,6 +1,6 @@
 ﻿namespace StudentEstimateServiceApi.Common
 {
-    public class Constants
+    public static class Constants
     {
         public const int MinGradeCountForWork = 2;
         public const int MaxGradeCountForWork = 5;

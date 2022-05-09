@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 using StudentEstimateServiceApi.Common;
@@ -26,7 +24,7 @@ namespace StudentEstimateServiceApi.Infrastructure.Services.WorkService
             IAssignmentRepository assignmentRepository,
             IWorkRepository workRepository,
             IRoomRepository roomRepository,
-            IStudentGradeInfoRepository studentGradeInfoRepository, 
+            IStudentGradeInfoRepository studentGradeInfoRepository,
             IGradeRepository gradeRepository)
         {
             this.workFileProvider = workFileProvider;
@@ -76,28 +74,28 @@ namespace StudentEstimateServiceApi.Infrastructure.Services.WorkService
             return OperationResult.Success();
         }
 
-        public async Task<OperationResult<List<WorksToGradeDto>>> GetWorksToGrade(GetWorksToGrade dto, ObjectId user)
+        public async Task<OperationResult<BatchWorksToGradeDto>> GetWorksToGrade(GetWorksToGrade dto, ObjectId user)
         {
             var assignmentOperationResult = await assignmentRepository.FindById(dto.Assignment);
 
             if (assignmentOperationResult.IsError)
-                return assignmentOperationResult.ToOperationResult<List<WorksToGradeDto>>();
+                return assignmentOperationResult.ToOperationResult<BatchWorksToGradeDto>();
 
             var assignment = assignmentOperationResult.Result;
 
-            var validateResult =await Validate(assignment, dto.Room, user);
-            
+            var validateResult = await ValidateGetWorksToGrade(assignment, dto.Room, user);
+
             if (validateResult.IsError)
-                return validateResult.ToOperationResult<List<WorksToGradeDto>>();
+                return validateResult.ToOperationResult<BatchWorksToGradeDto>();
 
             var studentGradeInfo = await studentGradeInfoRepository.FindFirst(x => x.UserId == user);
 
             if (studentGradeInfo == null)
             {
-                var createGradeInfoOperationResult =await CreateNewGradeInfo(assignment, user);
+                var createGradeInfoOperationResult = await CreateNewGradeInfo(assignment, user);
 
                 if (createGradeInfoOperationResult.IsError)
-                    return OperationResult<List<WorksToGradeDto>>.Fail(createGradeInfoOperationResult.ErrorMessage);
+                    return OperationResult<BatchWorksToGradeDto>.Fail(createGradeInfoOperationResult.ErrorMessage);
                 studentGradeInfo = createGradeInfoOperationResult.Result;
             }
 
@@ -105,15 +103,26 @@ namespace StudentEstimateServiceApi.Infrastructure.Services.WorkService
             var worksCountForGrade = studentGradeInfo.MaxWorkCountToGrade - gradedWorksCount;
 
             if (worksCountForGrade <= 0)
-                return OperationResult<List<WorksToGradeDto>>.Success(new List<WorksToGradeDto>());//TODO return empty
+            {
+                var emptyResult = new BatchWorksToGradeDto
+                {
+                    GradedWorksCount = gradedWorksCount,
+                    NeedToGradeWorksCount = studentGradeInfo.MaxWorkCountToGrade
+                };
+                return OperationResult<BatchWorksToGradeDto>.Success(emptyResult);
+            }
 
-            var worksToGrade = await workRepository.FindWorkForGrade(assignment.Id, user,(int)worksCountForGrade);
-            var result = new List<WorksToGradeDto>();
+            var worksToGrade = await workRepository.FindWorkForGrade(assignment.Id, user, (int)worksCountForGrade);
+            var result = new BatchWorksToGradeDto
+            {
+                GradedWorksCount = gradedWorksCount,
+                NeedToGradeWorksCount = studentGradeInfo.MaxWorkCountToGrade
+            };
 
             foreach (var work in worksToGrade)
             {
                 var filesWithType = workFileProvider.GetFilesWithMetaData(work.FileAnswers);
-                result.Add(new WorksToGradeDto
+                result.AvailableWorksToGrade.Add(new WorkToGradeDto
                 {
                     FileAnswers = filesWithType,
                     TextAnswer = work.TextAnswer,
@@ -121,12 +130,13 @@ namespace StudentEstimateServiceApi.Infrastructure.Services.WorkService
                 });
             }
 
-            return OperationResult<List<WorksToGradeDto>>.Success(result);
+            return OperationResult<BatchWorksToGradeDto>.Success(result);
         }
 
         private async Task<OperationResult<StudentGradeInfo>> CreateNewGradeInfo(Assignment assignment, ObjectId user)
         {
-            var workCountOperationResult = GetWorkCountToGrade(GradePriority.Normal, assignment.MinGradeCountForWork, assignment.MaxGradeCountForWork);
+            var workCountOperationResult = GetWorkCountToGrade(GradePriority.Normal, assignment.MinGradeCountForWork,
+                assignment.MaxGradeCountForWork);
 
             if (workCountOperationResult.IsError)
                 return OperationResult<StudentGradeInfo>.Fail(workCountOperationResult.ErrorMessage);
@@ -171,14 +181,15 @@ namespace StudentEstimateServiceApi.Infrastructure.Services.WorkService
         {
             return priority switch
             {
-                GradePriority.Low => OperationResult<int>.Success( minWorkGrades),
-                GradePriority.Normal =>OperationResult<int>.Success((int)Math.Ceiling((maxWorkGrades * 1.0 + minWorkGrades) / 2)),
+                GradePriority.Low => OperationResult<int>.Success(minWorkGrades),
+                GradePriority.Normal => OperationResult<int>.Success(
+                    (int)Math.Ceiling((maxWorkGrades * 1.0 + minWorkGrades) / 2)),
                 GradePriority.High => OperationResult<int>.Success(maxWorkGrades),
                 _ => OperationResult<int>.Fail($"Unknown value of type {nameof(GradePriority)}")
             };
         }
 
-        private async Task<OperationResult> Validate(Assignment assignment, ObjectId roomId, ObjectId user)
+        private async Task<OperationResult> ValidateGetWorksToGrade(Assignment assignment, ObjectId roomId, ObjectId user)
         {
             if (IsAssignmentExpired(assignment.ExpirationTime))
                 return OperationResult.Fail("Assignment expired");
