@@ -11,7 +11,7 @@ using StudentEstimateServiceApi.Repositories.Interfaces;
 
 namespace StudentEstimateServiceApi.Controllers
 {
-    [Route(Route.Base + "/rooms/{roomId}/assignments")]
+    [Route(Route.Base + "/assignments")]
     [ApiController]
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class AssignmentController : Controller
@@ -31,7 +31,7 @@ namespace StudentEstimateServiceApi.Controllers
         [HttpGet("{assignmentId}")]
         public async Task<ActionResult<AssignmentDto>> GetAssignmentById([FromRoute] string assignmentId)
         {
-            var assignmentFindResult = await roomRepository.FindById(assignmentId);
+            var assignmentFindResult = await assignmentRepository.FindById(assignmentId);
 
             if (!assignmentFindResult.IsSuccess)
             {
@@ -44,7 +44,7 @@ namespace StudentEstimateServiceApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AssignmentDto>>> GetAssignments([FromRoute] string roomId)
+        public async Task<ActionResult<IEnumerable<AssignmentDto>>> GetAssignments([FromQuery] string roomId)
         {
             var roomFindResult = await roomRepository.FindById(roomId);
 
@@ -62,7 +62,7 @@ namespace StudentEstimateServiceApi.Controllers
 
         [HttpPost]
         public async Task<ActionResult<AssignmentDto>> CreateAssignment([FromBody] AssignmentDto assignmentDto,
-            [FromRoute] string roomId)
+            [FromQuery] string roomId)
         {
             assignmentDto.MaxGradeCountForWork ??= Constants.MaxGradeCountForWork;
             assignmentDto.MinGradeCountForWork ??= Constants.MinGradeCountForWork;

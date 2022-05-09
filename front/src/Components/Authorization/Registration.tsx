@@ -3,21 +3,16 @@ import '../../App.css';
 import {Button, Card, FormControlLabel, Radio, RadioGroup, TextField} from "@mui/material";
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../ProtectedRoutes/AuthProvider";
+import {RegistrationModel} from "../../Models/RegistrationModel";
 
-export type RegistrationModel = {
-    Role: string,
-    Login: string,
-    Password: string,
-    FullName: string
-}
 
 export const Registration = () => {
     const [model, setModel] = useState<RegistrationModel>(
         {
-            FullName: "",
-            Role: "Admin",
-            Login: "",
-            Password: "",
+            fullName: "",
+            role: "Admin",
+            login: "",
+            password: "",
         }
     )
 
@@ -45,23 +40,23 @@ export const Registration = () => {
     return <div className="auth-container">
         <Card variant={"outlined"} className="auth-card" sx={{background: "#FAFAFA"}}>
             <div className="auth">
-                <TextField label="ФИО" onChange={handleChange("FullName")} id={"FullName"}/>
-                <TextField label="Логин" onChange={handleChange("Login")} id={"Login"}/>
-                <TextField label="Пароль" onChange={handleChange("Password")} type="password" id={"Password"}/>
+                <TextField label="ФИО" onChange={handleChange("fullName")} id={"fullName"}/>
+                <TextField label="Логин" onChange={handleChange("login")} id={"login"}/>
+                <TextField label="Пароль" onChange={handleChange("password")} type="password" id={"password"}/>
                 <RadioGroup
                     className="radio"
                     row
                     aria-labelledby="demo-row-radio-buttons-group-label"
                     name="row-radio-buttons-group"
-                    value={model.Role}
-                    onChange={handleChange("Role")}
+                    value={model.role}
+                    onChange={handleChange("role")}
                 >
                     <FormControlLabel value="Admin" control={<Radio/>} label="Admin"/>
                     <FormControlLabel value="User" control={<Radio/>} label="User"/>
                 </RadioGroup>
                 <Button onClick={() => onRegister(model)}
                         variant="contained"
-                        disabled={!(model.Password && model.Login && model.FullName)}>Зарегистрироваться</Button>
+                        disabled={!(model.password && model.login && model.fullName)}>Зарегистрироваться</Button>
             </div>
             <div className="error">{errorMessage}</div>
         </Card>

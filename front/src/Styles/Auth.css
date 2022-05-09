@@ -20,5 +20,6 @@
 }
 
 .error {
+    align-self: center;
     color: red;
 }

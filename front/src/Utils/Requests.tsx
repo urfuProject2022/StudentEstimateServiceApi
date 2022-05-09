@@ -1,5 +1,5 @@
 import settings from "../settings.json";
-import {RegistrationModel} from "../Components/Authorization/Registration";
+import {RegistrationModel} from "../Models/RegistrationModel";
 
 
 export const LoginRequest = (login: string, password: string) => {
@@ -19,5 +19,11 @@ export const RegistrationRequest = (registrationDto: RegistrationModel) => {
             'Content-Type': 'application/json',
         }),
         body: JSON.stringify(registrationDto)
+    })
+}
+
+export const SignedInUserRequest = () => {
+    return fetch(settings.serverEndpoint + "/users/me", {
+        method: 'GET'
     })
 }
