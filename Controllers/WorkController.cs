@@ -67,7 +67,6 @@ namespace StudentEstimateServiceApi.Controllers
 
             if (!ObjectId.TryParse(assignment, out var assignmentId))
                 return BadRequest();
-            
 
             var userWork = await workService.GetUserWork(assignmentId, userId.Value);
             return userWork.ToApiResponse();
