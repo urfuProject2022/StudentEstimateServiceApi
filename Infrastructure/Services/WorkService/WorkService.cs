@@ -122,7 +122,7 @@ namespace StudentEstimateServiceApi.Infrastructure.Services.WorkService
             foreach (var work in worksToGrade)
             {
                 var filesWithType = workFileProvider.GetFilesWithMetaData(work.FileAnswers);
-                result.AvailableWorksToGrade.Add(new WorkToGradeDto
+                result.AvailableWorksToGrade.Add(new WorkDto
                 {
                     FileAnswers = filesWithType,
                     TextAnswer = work.TextAnswer,
