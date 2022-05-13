@@ -191,9 +191,6 @@ namespace StudentEstimateServiceApi.Infrastructure.Services.WorkService
 
         private async Task<OperationResult> ValidateGetWorksToGrade(Assignment assignment, ObjectId roomId, ObjectId user)
         {
-            if (IsAssignmentExpired(assignment.ExpirationTime))
-                return OperationResult.Fail("Assignment expired");
-
             var findRoomResult = await roomRepository.FindById(roomId);
 
             if (findRoomResult.IsError)

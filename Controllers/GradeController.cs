@@ -21,7 +21,7 @@ namespace StudentEstimateServiceApi.Controllers
         }
 
         [HttpPost("set")]
-        public async Task<ActionResult> SetGrade(SetGradeDto dto)
+        public async Task<ActionResult> SetGrade([FromBody] SetGradeDto dto)
         {
             var user = HttpContext.GetUserId();
 

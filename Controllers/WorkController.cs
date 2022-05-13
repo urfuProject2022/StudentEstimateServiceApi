@@ -42,7 +42,7 @@ namespace StudentEstimateServiceApi.Controllers
         }
 
         [HttpGet("to-grade")]
-        public async Task<ActionResult> GetWorkToGrade(GetWorksToGradeDto dto)
+        public async Task<ActionResult> GetWorkToGrade([FromBody] GetWorksToGradeDto dto)
         {
             var userId = HttpContext.GetUserId();
 

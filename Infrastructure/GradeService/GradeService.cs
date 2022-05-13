@@ -49,12 +49,7 @@ namespace StudentEstimateServiceApi.Infrastructure.Services
 
             if (assignmentOperationResult.IsError)
                 return assignmentOperationResult;
-
-            var assignment = assignmentOperationResult.Result;
-
-            if (IsAssignmentExpired(assignment.ExpirationTime))
-                return OperationResult.Fail("Assignment expired");
-
+            
             var isGradeExists = gradeRepository.FindGrade(grade.GradedWorkId, user) != null;
 
             if (isGradeExists)
