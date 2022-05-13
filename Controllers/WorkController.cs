@@ -12,7 +12,7 @@ using StudentEstimateServiceApi.Models.DTO;
 
 namespace StudentEstimateServiceApi.Controllers
 {
-    [Route(Route.Base + "/work")]
+    [Route(Route.Base + "/works")]
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class WorkController : Controller
     {
@@ -57,8 +57,8 @@ namespace StudentEstimateServiceApi.Controllers
             return worksToGradeOperationResult.ToApiResponse();
         }
 
-        [HttpGet("user-works")]
-        public async Task<ActionResult> GetUsersWorks([FromHeader] string assignment)
+        [HttpGet("userWork")]
+        public async Task<ActionResult> GetUserWork([FromQuery] string assignment)
         {
             var userId = HttpContext.GetUserId();
 
