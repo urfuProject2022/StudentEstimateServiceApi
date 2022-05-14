@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 using StudentEstimateServiceApi.Common;
@@ -131,6 +132,24 @@ namespace StudentEstimateServiceApi.Infrastructure.Services.WorkService
             }
 
             return OperationResult<BatchWorksToGradeDto>.Success(result);
+        }
+
+        public async Task<OperationResult<WorkDto>> GetUserWork(ObjectId assignment, ObjectId user)
+        {
+            var userWorks = await workRepository.FindStudentWork(user, assignment);
+
+            if (userWorks == null)
+                return OperationResult<WorkDto>.Fail("Work not found", (int)HttpStatusCode.NotFound);
+
+            var workFiles = workFileProvider.GetFilesWithMetaData(userWorks.FileAnswers);
+            var workDto = new WorkDto
+            {
+                FileAnswers = workFiles,
+                TextAnswer = userWorks.TextAnswer,
+                WorkId = userWorks.Id
+            };
+
+            return OperationResult<WorkDto>.Success(workDto);
         }
 
         private async Task<OperationResult<StudentGradeInfo>> CreateNewGradeInfo(Assignment assignment, ObjectId user)
