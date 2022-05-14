@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
+using StudentEstimateServiceApi.Models.DTO;
 using StudentEstimateServiceApi.Settings;
 
 namespace StudentEstimateServiceApi.Infrastructure.Providers.WorkFileProvider
@@ -12,6 +13,8 @@ namespace StudentEstimateServiceApi.Infrastructure.Providers.WorkFileProvider
     public class WorkFileProvider : IWorkFileProvider
     {
         private readonly IGridFSBucket gridFsClient;
+        private const string ContentType = "ContentType";
+        private const string UnknownFileType = "Unknown";
 
         public WorkFileProvider(IMongoDatabaseSettings mongoSettings)
         {
@@ -33,7 +36,7 @@ namespace StudentEstimateServiceApi.Infrastructure.Providers.WorkFileProvider
             var options = new GridFSUploadOptions();
             var metaData = new Dictionary<string, string>
             {
-                { "ContentType", file.ContentType }
+                { ContentType, file.ContentType }
             };
             options.Metadata = new BsonDocument(metaData);
 
@@ -44,6 +47,29 @@ namespace StudentEstimateServiceApi.Infrastructure.Providers.WorkFileProvider
             sourceReadStream.Close();
 
             return fileId;
+        }
+
+        public List<FileDto> GetFilesWithMetaData(IEnumerable<ObjectId> filesId)
+        {
+            var filter = Builders<GridFSFileInfo<ObjectId>>.Filter.In(x => x.Id, filesId);
+            var filesMetaData = gridFsClient.Find(filter).ToList();
+
+            return filesMetaData.Select(GetFileInfo).ToList();
+        }
+
+        private FileDto GetFileInfo(GridFSFileInfo<ObjectId> fileInfo)
+        {
+            if (!fileInfo.Metadata.TryGetValue(ContentType, out var contentType))
+                contentType = null;
+
+            var bytes = gridFsClient.DownloadAsBytes(fileInfo.Id);
+
+            return new FileDto
+            {
+                Content = bytes,
+                Name = fileInfo.Filename,
+                Type = contentType?.AsString ?? UnknownFileType
+            };
         }
     }
 }

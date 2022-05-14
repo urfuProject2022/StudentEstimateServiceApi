@@ -6,19 +6,18 @@ namespace StudentEstimateServiceApi.Models
 {
     public class Work
     {
-        [BsonId] public ObjectId Id { get; set; }
+        [BsonId]
+        public ObjectId Id { get; set; }
         public ObjectId UserId { get; set; }
         public ObjectId Assignment { get; set; }
-        public List<ObjectId> FileAnswers { get; set; }
-
-        /// <summary>
-        ///     Поставленные студентом оценки
-        /// </summary>
-        public List<ObjectId> SettedMarks;
+        public List<ObjectId> FileAnswers { get; set; } = new();
+        public string TextAnswer { get; set; }
 
         /// <summary>
         ///     Полученные оценки
         /// </summary>
-        public List<ObjectId> ReceivedMarks;
+        public List<ObjectId> ReceivedMarks { get; set; } = new();
+
+        public List<ObjectId> GradedBy { get; set; } = new();
     }
 }

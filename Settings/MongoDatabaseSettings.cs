@@ -9,5 +9,7 @@
         public string RoomCollectionName { get; set; }
         public string AssignmentCollectionName { get; set; }
         public string WorkCollectionName { get; set; }
+        public string GradeCollectionName { get; set; }
+        public string GradeInfoCollectionName { get; set; }
     }
 }
