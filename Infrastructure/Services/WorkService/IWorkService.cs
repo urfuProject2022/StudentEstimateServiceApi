@@ -10,5 +10,6 @@ namespace StudentEstimateServiceApi.Infrastructure.Services.WorkService
     {
         Task<OperationResult> Submit(SubmitWork submitWork, ObjectId userId);
         Task<OperationResult<BatchWorksToGradeDto>> GetWorksToGrade(GetWorksToGrade dto, ObjectId user);
+        Task<OperationResult<WorkDto>> GetUserWork(ObjectId assignment, ObjectId user);
     }
 }
