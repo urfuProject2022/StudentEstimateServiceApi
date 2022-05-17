@@ -10,6 +10,7 @@ import {DrawerNavigation} from "./Components/Navigation/DrawerNavigation";
 import axios from "axios";
 import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider/LocalizationProvider';
 import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
+import {InviteAcceptPage} from "./Components/Invites/InviteAcceptPage";
 
 axios.defaults.baseURL = 'https://localhost:5001/api'
 
@@ -30,6 +31,7 @@ function App() {
                         <Route path="login" element={<Login/>}/>
                         <Route path="registration" element={<Registration/>}/>
                         <Route path="/*" element={<RequireAuth><DrawerNavigation/></RequireAuth>}/>
+                        <Route path="invites/accept" element={<RequireAuth><InviteAcceptPage/></RequireAuth>}/>
                     </Routes>
                 </LocalizationProvider>
             </QueryClientProvider>

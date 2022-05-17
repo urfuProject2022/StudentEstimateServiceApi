@@ -31,7 +31,7 @@ namespace StudentEstimateServiceApi.Controllers
             if (acceptResult.IsError)
                 return StatusCode(acceptResult.StatusCode, acceptResult.ErrorMessage);
 
-            return Ok();
+            return Ok("Вы успешно вступили в комнату");
         }
     }
 }

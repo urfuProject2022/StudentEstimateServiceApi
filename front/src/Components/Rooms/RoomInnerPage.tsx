@@ -19,7 +19,7 @@ export const RoomInnerPage: React.FC = () => {
                 <Typography variant={"h5"}>{room.description}</Typography>
                 <AssignmentList roomId={roomId}/>
                 <Stack direction={"row"} spacing={2} justifyContent={"space-evenly"}>
-                    <UserList roomId={roomId} inviteLink={room.inviteLink}/>
+                    <UserList roomId={roomId} inviteLink={room.inviteLink.replace("/api", "")}/>
                     <RoomOwnerCard ownerName={room.ownerName}/>
                 </Stack>
             </Stack>}

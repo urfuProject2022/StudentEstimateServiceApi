@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {getCookie, removeCookie} from "typescript-cookie";
-import {LoginRequest, RegistrationRequest, SignedInUserRequest} from "../../Utils/Requests";
+import {loginRequest, registrationRequest, signedInUserRequest} from "../../Utils/Requests";
 import {User} from "../../Models/User";
 import {RegistrationModel} from "../../Models/RegistrationModel";
 
@@ -31,13 +31,13 @@ export function AuthProvider({children}: { children: React.ReactNode }) {
     }, [cookieState])
 
     let getSignedInUser = async () => {
-        let response = await SignedInUserRequest()
+        let response = await signedInUserRequest()
         let user: User = await response.json()
         return user
     }
 
     let signIn = (login: string, password: string) => {
-        return LoginRequest(login, password)
+        return loginRequest(login, password)
             .then(resp => {
                 if (resp.ok) {
                     setCookieState(true)
@@ -52,7 +52,7 @@ export function AuthProvider({children}: { children: React.ReactNode }) {
     }
 
     let register = (dto: RegistrationModel) => {
-        return RegistrationRequest(dto)
+        return registrationRequest(dto)
             .then(resp => {
                 if (resp.ok) {
                     setCookieState(true)

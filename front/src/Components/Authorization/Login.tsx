@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import '../../App.css';
 import {Button, Card, TextField} from "@mui/material";
-import {useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import {useAuth} from "../ProtectedRoutes/AuthProvider";
 import "../../Styles/Auth.css"
 
@@ -12,6 +12,9 @@ const Login = () => {
 
     const auth = useAuth()
     const navigate = useNavigate()
+    let location = useLocation();
+    // @ts-ignore
+    let from = location.state?.from || "/rooms";
 
     const onLogin = () => {
         auth.signIn(login, password)
@@ -21,7 +24,7 @@ const Login = () => {
                     setErrorMessage(errorMessage)
                 }
                 else {
-                    navigate("/rooms")
+                    navigate(from)
                 }
             })
     }
