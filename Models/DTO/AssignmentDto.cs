@@ -10,5 +10,7 @@ namespace StudentEstimateServiceApi.Models.DTO
         public string Description { get; set; }
         public List<string> Works { get; set; }
         public DateTime ExpirationTime { get; set; }
+        public int? MinGradeCountForWork { get; set; }
+        public int? MaxGradeCountForWork { get; set; }
     }
 }

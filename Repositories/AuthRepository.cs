@@ -14,12 +14,6 @@ namespace StudentEstimateServiceApi.Repositories
         {
         }
 
-        public async Task<UserAuth> FindFirst(Expression<Func<UserAuth, bool>> predicate)
-        {
-            var findResult = await Collection.Find(predicate).SingleOrDefaultAsync();
-            return findResult;
-        }
-
         public async Task<bool> Any(Expression<Func<UserAuth, bool>> predicate)
         {
             var findResult = await Collection.Find(predicate).SingleOrDefaultAsync();

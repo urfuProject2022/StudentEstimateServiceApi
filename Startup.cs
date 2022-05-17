@@ -10,7 +10,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
+using StudentEstimateServiceApi.Infrastructure.GradeService;
 using StudentEstimateServiceApi.Infrastructure.Providers.WorkFileProvider;
+using StudentEstimateServiceApi.Infrastructure.Services;
 using StudentEstimateServiceApi.Infrastructure.Services.InviteService;
 using StudentEstimateServiceApi.Infrastructure.Services.WorkService;
 using StudentEstimateServiceApi.Models;
@@ -46,6 +48,10 @@ namespace StudentEstimateServiceApi
             services.AddSingleton<IInviteService, InviteService>();
             services.AddSingleton<IAssignmentRepository, AssignmentRepository>();
             services.AddSingleton<IWorkRepository, WorkRepository>();
+            services.AddSingleton<IStudentGradeInfoRepository, StudentGradeInfoRepository>();
+            services.AddSingleton<IGradeRepository, GradeRepository>();
+
+            services.AddSingleton<IGradeService, GradeService>();
             services.AddSingleton<IWorkFileProvider, WorkFileProvider>();
             services.AddSingleton<IWorkService, WorkService>();
 
@@ -62,6 +68,8 @@ namespace StudentEstimateServiceApi
                 cfg.CreateMap<AssignmentDto, Assignment>();
                 cfg.CreateMap<Assignment, AssignmentDto>();
                 cfg.CreateMap<SubmitWorkDto, SubmitWork>();
+                cfg.CreateMap<GetWorksToGradeDto, GetWorksToGrade>();
+                cfg.CreateMap<SetGradeDto, Grade>();
             }, Array.Empty<Assembly>());
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(

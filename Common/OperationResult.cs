@@ -1,4 +1,6 @@
-﻿#pragma warning disable 108,114
+﻿using System.Collections.Generic;
+
+#pragma warning disable 108,114
 namespace StudentEstimateServiceApi.Common
 {
     public class OperationResult
