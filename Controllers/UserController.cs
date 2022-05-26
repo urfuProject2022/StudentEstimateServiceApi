@@ -1,13 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using AutoMapper;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StudentEstimateServiceApi.Common;
 using StudentEstimateServiceApi.Common.Extensions;
 using StudentEstimateServiceApi.Models;
-using StudentEstimateServiceApi.Models.DTO;
 using StudentEstimateServiceApi.Repositories.Interfaces;
 
 namespace StudentEstimateServiceApi.Controllers
@@ -19,17 +17,15 @@ namespace StudentEstimateServiceApi.Controllers
     {
         private readonly IUserRepository userRepository;
         private readonly IRoomRepository roomRepository;
-        private readonly IMapper mapper;
 
-        public UserController(IUserRepository userRepository, IRoomRepository roomRepository, IMapper mapper)
+        public UserController(IUserRepository userRepository, IRoomRepository roomRepository)
         {
             this.userRepository = userRepository;
             this.roomRepository = roomRepository;
-            this.mapper = mapper;
         }
 
         [HttpGet("me")]
-        public async Task<ActionResult<UserDto>> GetSignedInUser()
+        public async Task<ActionResult<User>> GetSignedInUser()
         {
             var userId = HttpContext.GetUserId();
             if (!userId.HasValue)
@@ -39,46 +35,47 @@ namespace StudentEstimateServiceApi.Controllers
         }
 
         [HttpGet("{userId}")]
-        public async Task<ActionResult<UserDto>> GetUserById([FromRoute] string userId)
+        public async Task<ActionResult<User>> GetUserById([FromRoute] string userId)
         {
+            var currentUserId = HttpContext.GetUserId();
+
+            if (!currentUserId.HasValue)
+                return BadRequest();
+
+            var currentUserResult = await userRepository.FindById(currentUserId.Value);
+            if (currentUserResult.IsError)
+                return BadRequest();
+
+            var currentUser = currentUserResult.Result;
+
+            if (currentUser.Role != Role.Admin && currentUserId.ToString() != userId)
+                return BadRequest();
+
             var findResult = await userRepository.FindById(userId);
-
-            if (!findResult.IsSuccess)
-            {
-                return NotFound(findResult.ErrorMessage);
-            }
-
-            var userDto = mapper.Map<UserDto>(findResult.Result);
-
-            return Ok(userDto);
+            return findResult.ToApiResponse();
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserDto>>> GetUsersByRoomId([FromQuery] string roomId)
+        public async Task<ActionResult<IEnumerable<User>>> GetUsersByRoomId([FromQuery] string roomId)
         {
+            var userId = HttpContext.GetUserId();
+
+            if (!userId.HasValue)
+                return BadRequest();
+
             var roomFindResult = await roomRepository.FindById(roomId);
 
-            if (!roomFindResult.IsSuccess)
-            {
+            if (!roomFindResult.IsSuccess) 
                 return NotFound(roomFindResult.ErrorMessage);
-            }
 
             var room = roomFindResult.Result;
+
+            if (!room.Users.Contains(userId.Value) && room.OwnerId != userId.Value)
+                return BadRequest("No access to assignment");
+
             var users = await userRepository.FindRoomUsers(room.Users);
-            var userDtos = mapper.Map<IEnumerable<UserDto>>(users);
 
-            return Ok(userDtos);
-        }
-
-        [HttpPost]
-        public async Task<ActionResult<UserDto>> CreateUser([FromBody] UserDto userDto)
-        {
-            var user = mapper.Map<User>(userDto);
-
-            var createdUser = await userRepository.Create(user);
-            var createdUserDto = mapper.Map<UserDto>(createdUser);
-
-            return Ok(createdUserDto);
+            return Ok(users);
         }
     }
 }

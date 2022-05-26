@@ -3,6 +3,7 @@ using System.Reflection;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,9 +11,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
-using StudentEstimateServiceApi.Infrastructure.GradeService;
+using StudentEstimateServiceApi.Common;
 using StudentEstimateServiceApi.Infrastructure.Providers.WorkFileProvider;
 using StudentEstimateServiceApi.Infrastructure.Services;
+using StudentEstimateServiceApi.Infrastructure.Services.GradeService;
 using StudentEstimateServiceApi.Infrastructure.Services.InviteService;
 using StudentEstimateServiceApi.Infrastructure.Services.WorkService;
 using StudentEstimateServiceApi.Models;
@@ -59,16 +61,8 @@ namespace StudentEstimateServiceApi
 
             services.AddAutoMapper(cfg =>
             {
-                cfg.CreateMap<User, UserDto>();
-                cfg.CreateMap<UserDto, User>();
-                cfg.CreateMap<Room, RoomDto>();
-                cfg.CreateMap<RoomDto, Room>();
                 cfg.CreateMap<RegistrationDto, UserAuth>();
                 cfg.CreateMap<RegistrationDto, User>();
-                cfg.CreateMap<AssignmentDto, Assignment>();
-                cfg.CreateMap<Assignment, AssignmentDto>();
-                cfg.CreateMap<SubmitWorkDto, SubmitWork>();
-                cfg.CreateMap<GetWorksToGradeDto, GetWorksToGrade>();
                 cfg.CreateMap<SetGradeDto, Grade>();
             }, Array.Empty<Assembly>());
 
@@ -81,7 +75,7 @@ namespace StudentEstimateServiceApi
 
             services.AddSpaStaticFiles(x => { x.RootPath = "wwwroot"; });
 
-            services.AddControllers().AddNewtonsoftJson();
+            services.AddControllers().AddNewtonsoftJson(x=>x.SerializerSettings.Converters.Add(new ObjectIdConverter()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -108,7 +102,6 @@ namespace StudentEstimateServiceApi
 
             app.UseAuthentication();
             app.UseAuthorization();
-
 
             app.MapWhen(context => context.Request.Path.StartsWithSegments("/api"),
                 _ => { app.UseEndpoints(x => x.MapControllers()); });
