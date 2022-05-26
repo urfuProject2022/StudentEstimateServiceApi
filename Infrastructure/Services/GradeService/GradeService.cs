@@ -3,12 +3,11 @@ using System.Threading.Tasks;
 using AutoMapper;
 using MongoDB.Bson;
 using StudentEstimateServiceApi.Common;
-using StudentEstimateServiceApi.Infrastructure.GradeService;
 using StudentEstimateServiceApi.Models;
 using StudentEstimateServiceApi.Models.DTO;
 using StudentEstimateServiceApi.Repositories.Interfaces;
 
-namespace StudentEstimateServiceApi.Infrastructure.Services
+namespace StudentEstimateServiceApi.Infrastructure.Services.GradeService
 {
     public class GradeService : IGradeService
     {

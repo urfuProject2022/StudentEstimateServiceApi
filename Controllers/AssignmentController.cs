@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using AutoMapper;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 using StudentEstimateServiceApi.Common;
+using StudentEstimateServiceApi.Common.Extensions;
 using StudentEstimateServiceApi.Models;
 using StudentEstimateServiceApi.Models.DTO;
 using StudentEstimateServiceApi.Repositories.Interfaces;
@@ -18,33 +19,22 @@ namespace StudentEstimateServiceApi.Controllers
     {
         private readonly IAssignmentRepository assignmentRepository;
         private readonly IRoomRepository roomRepository;
-        private readonly IMapper mapper;
 
-        public AssignmentController(IAssignmentRepository assignmentRepository, IRoomRepository roomRepository,
-            IMapper mapper)
+        public AssignmentController(IAssignmentRepository assignmentRepository, IRoomRepository roomRepository)
         {
             this.assignmentRepository = assignmentRepository;
             this.roomRepository = roomRepository;
-            this.mapper = mapper;
         }
 
         [HttpGet("{assignmentId}")]
-        public async Task<ActionResult<AssignmentDto>> GetAssignmentById([FromRoute] string assignmentId)
+        public async Task<ActionResult<Assignment>> GetAssignmentById([FromRoute] string assignmentId)
         {
             var assignmentFindResult = await assignmentRepository.FindById(assignmentId);
-
-            if (!assignmentFindResult.IsSuccess)
-            {
-                return NotFound(assignmentFindResult.ErrorMessage);
-            }
-
-            var assignmentDto = mapper.Map<AssignmentDto>(assignmentFindResult.Result);
-
-            return Ok(assignmentDto);
+            return assignmentFindResult.ToApiResponse();
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AssignmentDto>>> GetAssignments([FromQuery] string roomId)
+        public async Task<ActionResult<IEnumerable<Assignment>>> GetAssignments([FromQuery] string roomId)
         {
             var roomFindResult = await roomRepository.FindById(roomId);
 
@@ -55,17 +45,18 @@ namespace StudentEstimateServiceApi.Controllers
 
             var room = roomFindResult.Result;
             var assignments = await assignmentRepository.FindRoomAssignments(room.Assignments);
-            var assignmentDtos = mapper.Map<IEnumerable<AssignmentDto>>(assignments);
-
-            return Ok(assignmentDtos);
+           
+            return Ok(assignments);
         }
 
         [HttpPost]
-        public async Task<ActionResult<AssignmentDto>> CreateAssignment([FromBody] AssignmentDto assignmentDto,
+        public async Task<ActionResult<Assignment>> CreateAssignment([FromBody] Assignment assignment,
             [FromQuery] string roomId)
         {
-            assignmentDto.MaxGradeCountForWork ??= Constants.MaxGradeCountForWork;
-            assignmentDto.MinGradeCountForWork ??= Constants.MinGradeCountForWork;
+            assignment.MaxGradeCountForWork ??= Constants.MaxGradeCountForWork;
+            assignment.MinGradeCountForWork ??= Constants.MinGradeCountForWork;
+            assignment.Id = ObjectId.GenerateNewId();
+
             var roomFindResult = await roomRepository.FindById(roomId);
 
             if (!roomFindResult.IsSuccess)
@@ -74,7 +65,6 @@ namespace StudentEstimateServiceApi.Controllers
             }
 
             var room = roomFindResult.Result;
-            var assignment = mapper.Map<Assignment>(assignmentDto);
 
             var createdAssignment = await assignmentRepository.Create(assignment);
 

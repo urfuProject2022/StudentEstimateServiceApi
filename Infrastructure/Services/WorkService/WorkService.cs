@@ -135,8 +135,8 @@ namespace StudentEstimateServiceApi.Infrastructure.Services.WorkService
 
         private async Task<OperationResult<StudentGradeInfo>> CreateNewGradeInfo(Assignment assignment, ObjectId user)
         {
-            var workCountOperationResult = GetWorkCountToGrade(GradePriority.Normal, assignment.MinGradeCountForWork,
-                assignment.MaxGradeCountForWork);
+            var workCountOperationResult = GetWorkCountToGrade(GradePriority.Normal, assignment.MinGradeCountForWork!.Value,
+                assignment.MaxGradeCountForWork!.Value);
 
             if (workCountOperationResult.IsError)
                 return OperationResult<StudentGradeInfo>.Fail(workCountOperationResult.ErrorMessage);

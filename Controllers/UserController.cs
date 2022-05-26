@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using AutoMapper;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,17 +18,15 @@ namespace StudentEstimateServiceApi.Controllers
     {
         private readonly IUserRepository userRepository;
         private readonly IRoomRepository roomRepository;
-        private readonly IMapper mapper;
 
-        public UserController(IUserRepository userRepository, IRoomRepository roomRepository, IMapper mapper)
+        public UserController(IUserRepository userRepository, IRoomRepository roomRepository)
         {
             this.userRepository = userRepository;
             this.roomRepository = roomRepository;
-            this.mapper = mapper;
         }
 
         [HttpGet("me")]
-        public async Task<ActionResult<UserDto>> GetSignedInUser()
+        public async Task<ActionResult<User>> GetSignedInUser()
         {
             var userId = HttpContext.GetUserId();
             if (!userId.HasValue)
@@ -39,22 +36,14 @@ namespace StudentEstimateServiceApi.Controllers
         }
 
         [HttpGet("{userId}")]
-        public async Task<ActionResult<UserDto>> GetUserById([FromRoute] string userId)
+        public async Task<ActionResult<User>> GetUserById([FromRoute] string userId)
         {
             var findResult = await userRepository.FindById(userId);
-
-            if (!findResult.IsSuccess)
-            {
-                return NotFound(findResult.ErrorMessage);
-            }
-
-            var userDto = mapper.Map<UserDto>(findResult.Result);
-
-            return Ok(userDto);
+            return findResult.ToApiResponse();
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserDto>>> GetUsersByRoomId([FromQuery] string roomId)
+        public async Task<ActionResult<IEnumerable<User>>> GetUsersByRoomId([FromQuery] string roomId)
         {
             var roomFindResult = await roomRepository.FindById(roomId);
 
@@ -65,20 +54,16 @@ namespace StudentEstimateServiceApi.Controllers
 
             var room = roomFindResult.Result;
             var users = await userRepository.FindRoomUsers(room.Users);
-            var userDtos = mapper.Map<IEnumerable<UserDto>>(users);
 
-            return Ok(userDtos);
+            return Ok(users);
         }
 
         [HttpPost]
-        public async Task<ActionResult<UserDto>> CreateUser([FromBody] UserDto userDto)
+        public async Task<ActionResult<User>> CreateUser([FromBody] User user)
         {
-            var user = mapper.Map<User>(userDto);
-
             var createdUser = await userRepository.Create(user);
-            var createdUserDto = mapper.Map<UserDto>(createdUser);
-
-            return Ok(createdUserDto);
+            
+            return Ok(createdUser);
         }
     }
 }

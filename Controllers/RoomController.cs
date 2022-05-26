@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using AutoMapper;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -22,34 +21,24 @@ namespace StudentEstimateServiceApi.Controllers
         private readonly IRoomRepository roomRepository;
         private readonly IUserRepository userRepository;
         private readonly IInviteService inviteService;
-        private readonly IMapper mapper;
 
         public RoomController(IRoomRepository roomRepository, IUserRepository userRepository,
-            IInviteService inviteService, IMapper mapper)
+            IInviteService inviteService)
         {
             this.roomRepository = roomRepository;
             this.userRepository = userRepository;
             this.inviteService = inviteService;
-            this.mapper = mapper;
         }
 
         [HttpGet("{roomId}")]
-        public async Task<ActionResult<RoomDto>> GetRoomById([FromRoute] string roomId)
+        public async Task<ActionResult<Room>> GetRoomById([FromRoute] string roomId)
         {
             var findResult = await roomRepository.FindById(roomId);
-
-            if (!findResult.IsSuccess)
-            {
-                return NotFound(findResult.ErrorMessage);
-            }
-
-            var roomDto = mapper.Map<RoomDto>(findResult.Result);
-
-            return Ok(roomDto);
+            return findResult.ToApiResponse();
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<RoomDto>>> GetRooms()
+        public async Task<ActionResult<IEnumerable<Room>>> GetRooms()
         {
             var userId = HttpContext.GetUserId();
 
@@ -64,16 +53,12 @@ namespace StudentEstimateServiceApi.Controllers
             }
 
             var rooms = await roomRepository.FindUserRooms(userFindResult.Result);
-            var roomsDto = mapper.Map<IEnumerable<RoomDto>>(rooms);
-
-            return Ok(roomsDto);
+            return Ok(rooms);
         }
 
         [HttpPost]
-        public async Task<ActionResult<RoomDto>> CreateRoom([FromBody] RoomDto roomDto)
+        public async Task<ActionResult<Room>> CreateRoom([FromBody] Room room)
         {
-            var room = mapper.Map<Room>(roomDto);
-
             var userId = HttpContext.GetUserId();
             if (userId.HasValue)
                 room.OwnerId = userId.Value;
@@ -101,8 +86,7 @@ namespace StudentEstimateServiceApi.Controllers
             user.CreatedRooms.Add(room.Id);
             await userRepository.Update(user);
 
-            var createdRoomDto = mapper.Map<RoomDto>(createdRoom);
-            return Ok(createdRoomDto);
+            return Ok(createdRoom);
         }
     }
 }

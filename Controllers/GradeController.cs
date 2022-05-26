@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StudentEstimateServiceApi.Common;
 using StudentEstimateServiceApi.Common.Extensions;
-using StudentEstimateServiceApi.Infrastructure.GradeService;
+using StudentEstimateServiceApi.Infrastructure.Services.GradeService;
 using StudentEstimateServiceApi.Models.DTO;
 
 namespace StudentEstimateServiceApi.Controllers
