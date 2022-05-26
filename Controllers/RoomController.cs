@@ -57,7 +57,8 @@ namespace StudentEstimateServiceApi.Controllers
 
             var userFindResult = await userRepository.FindById(userId.Value);
 
-            if (!userFindResult.IsSuccess) return NotFound(userFindResult.ErrorMessage);
+            if (!userFindResult.IsSuccess) 
+                return NotFound(userFindResult.ErrorMessage);
 
             var rooms = await roomRepository.FindUserRooms(userFindResult.Result);
             return Ok(rooms);
