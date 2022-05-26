@@ -3,7 +3,7 @@ using MongoDB.Bson;
 using StudentEstimateServiceApi.Common;
 using StudentEstimateServiceApi.Models.DTO;
 
-namespace StudentEstimateServiceApi.Infrastructure.GradeService
+namespace StudentEstimateServiceApi.Infrastructure.Services.GradeService
 {
     public interface IGradeService
     {

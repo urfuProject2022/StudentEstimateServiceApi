@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using AutoMapper;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +8,6 @@ using StudentEstimateServiceApi.Common;
 using StudentEstimateServiceApi.Common.Extensions;
 using StudentEstimateServiceApi.Infrastructure.Services.InviteService;
 using StudentEstimateServiceApi.Models;
-using StudentEstimateServiceApi.Models.DTO;
 using StudentEstimateServiceApi.Repositories.Interfaces;
 
 namespace StudentEstimateServiceApi.Controllers
@@ -22,58 +20,53 @@ namespace StudentEstimateServiceApi.Controllers
         private readonly IRoomRepository roomRepository;
         private readonly IUserRepository userRepository;
         private readonly IInviteService inviteService;
-        private readonly IMapper mapper;
 
         public RoomController(IRoomRepository roomRepository, IUserRepository userRepository,
-            IInviteService inviteService, IMapper mapper)
+            IInviteService inviteService)
         {
             this.roomRepository = roomRepository;
             this.userRepository = userRepository;
             this.inviteService = inviteService;
-            this.mapper = mapper;
         }
 
         [HttpGet("{roomId}")]
-        public async Task<ActionResult<RoomDto>> GetRoomById([FromRoute] string roomId)
-        {
-            var findResult = await roomRepository.FindById(roomId);
-
-            if (!findResult.IsSuccess)
-            {
-                return NotFound(findResult.ErrorMessage);
-            }
-
-            var roomDto = mapper.Map<RoomDto>(findResult.Result);
-
-            return Ok(roomDto);
-        }
-
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<RoomDto>>> GetRooms()
+        public async Task<ActionResult<Room>> GetRoomById([FromRoute] string roomId)
         {
             var userId = HttpContext.GetUserId();
 
             if (!userId.HasValue)
                 return BadRequest();
-            
+
+            var roomResult = await roomRepository.FindById(roomId);
+            var room = roomResult.Result;
+
+            if (!room.Users.Contains(userId.Value) && room.OwnerId != userId.Value)
+                return BadRequest("No access to room");
+
+
+            return roomResult.ToApiResponse();
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Room>>> GetRooms()
+        {
+            var userId = HttpContext.GetUserId();
+
+            if (!userId.HasValue)
+                return BadRequest();
+
             var userFindResult = await userRepository.FindById(userId.Value);
 
-            if (!userFindResult.IsSuccess)
-            {
+            if (!userFindResult.IsSuccess) 
                 return NotFound(userFindResult.ErrorMessage);
-            }
 
             var rooms = await roomRepository.FindUserRooms(userFindResult.Result);
-            var roomsDto = mapper.Map<IEnumerable<RoomDto>>(rooms);
-
-            return Ok(roomsDto);
+            return Ok(rooms);
         }
 
         [HttpPost]
-        public async Task<ActionResult<RoomDto>> CreateRoom([FromBody] RoomDto roomDto)
+        public async Task<ActionResult<Room>> CreateRoom([FromBody] Room room)
         {
-            var room = mapper.Map<Room>(roomDto);
-
             var userId = HttpContext.GetUserId();
             if (userId.HasValue)
                 room.OwnerId = userId.Value;
@@ -88,21 +81,20 @@ namespace StudentEstimateServiceApi.Controllers
 
             room.Id = ObjectId.GenerateNewId();
             room.OwnerName = user.FullName;
-            
+
             var inviteUrl = inviteService.GenerateInviteUrl(HttpContext.Request.Host.Value, room.Id);
 
             if (inviteUrl.IsError)
                 return StatusCode(inviteUrl.StatusCode, inviteUrl.ErrorMessage);
 
             room.InviteLink = inviteUrl.Result;
-            
+
             var createdRoom = await roomRepository.Create(room);
 
             user.CreatedRooms.Add(room.Id);
             await userRepository.Update(user);
 
-            var createdRoomDto = mapper.Map<RoomDto>(createdRoom);
-            return Ok(createdRoomDto);
+            return Ok(createdRoom);
         }
     }
 }

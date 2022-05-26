@@ -14,7 +14,7 @@ namespace StudentEstimateServiceApi.Models
         public string Description { get; set; }
         public List<ObjectId> Works { get; set; }
         public DateTime ExpirationTime { get; set; }
-        public int MinGradeCountForWork { get; set; }
-        public int MaxGradeCountForWork { get; set; }
+        public int? MinGradeCountForWork { get; set; }
+        public int? MaxGradeCountForWork { get; set; }
     }
 }

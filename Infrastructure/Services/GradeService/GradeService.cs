@@ -1,28 +1,33 @@
-﻿using System;
+﻿using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
 using MongoDB.Bson;
 using StudentEstimateServiceApi.Common;
-using StudentEstimateServiceApi.Infrastructure.GradeService;
 using StudentEstimateServiceApi.Models;
 using StudentEstimateServiceApi.Models.DTO;
 using StudentEstimateServiceApi.Repositories.Interfaces;
 
-namespace StudentEstimateServiceApi.Infrastructure.Services
+namespace StudentEstimateServiceApi.Infrastructure.Services.GradeService
 {
     public class GradeService : IGradeService
     {
         private readonly IGradeRepository gradeRepository;
         private readonly IWorkRepository workRepository;
         private readonly IAssignmentRepository assignmentRepository;
+        private readonly IRoomRepository roomRepository;
         private readonly IMapper mapper;
 
-        public GradeService(IGradeRepository gradeRepository, IWorkRepository workRepository,
-            IAssignmentRepository assignmentRepository, IMapper mapper)
+        public GradeService(
+            IGradeRepository gradeRepository,
+            IWorkRepository workRepository,
+            IAssignmentRepository assignmentRepository,
+            IRoomRepository roomRepository,
+            IMapper mapper)
         {
             this.gradeRepository = gradeRepository;
             this.workRepository = workRepository;
             this.assignmentRepository = assignmentRepository;
+            this.roomRepository = roomRepository;
             this.mapper = mapper;
         }
 
@@ -49,7 +54,11 @@ namespace StudentEstimateServiceApi.Infrastructure.Services
 
             if (assignmentOperationResult.IsError)
                 return assignmentOperationResult;
-            
+
+            var hasAccess = await CheckAccessToRoomByAssignment(assignmentOperationResult.Result.Id, user);
+            if (hasAccess.IsError)
+                return hasAccess;
+
             var isGradeExists = gradeRepository.FindGrade(grade.GradedWorkId, user) != null;
 
             if (isGradeExists)
@@ -65,9 +74,16 @@ namespace StudentEstimateServiceApi.Infrastructure.Services
             return OperationResult.Success();
         }
 
-        private static bool IsAssignmentExpired(DateTime assignmentExpirationTime)
+        private async Task<OperationResult> CheckAccessToRoomByAssignment(ObjectId assignmentId, ObjectId userId)
         {
-            return DateTime.Now.ToUniversalTime() > assignmentExpirationTime.ToUniversalTime();
+            var room = await roomRepository.FindFirst(x => x.Assignments.Contains(assignmentId));
+
+            if (room == null)
+                return OperationResult.Fail("Room not found", (int)HttpStatusCode.NotFound);
+
+            if (!room.Users.Contains(userId) && room.OwnerId != userId)
+                return OperationResult.Fail("No access to assignment");
+            return OperationResult.Success();
         }
     }
 }
