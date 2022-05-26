@@ -7,7 +7,6 @@ using MongoDB.Bson;
 using StudentEstimateServiceApi.Common;
 using StudentEstimateServiceApi.Common.Extensions;
 using StudentEstimateServiceApi.Models;
-using StudentEstimateServiceApi.Models.DTO;
 using StudentEstimateServiceApi.Repositories.Interfaces;
 
 namespace StudentEstimateServiceApi.Controllers
@@ -29,23 +28,48 @@ namespace StudentEstimateServiceApi.Controllers
         [HttpGet("{assignmentId}")]
         public async Task<ActionResult<Assignment>> GetAssignmentById([FromRoute] string assignmentId)
         {
+            var userId = HttpContext.GetUserId();
+
+            if (!userId.HasValue)
+                return BadRequest();
+
             var assignmentFindResult = await assignmentRepository.FindById(assignmentId);
+
+            if (assignmentFindResult.IsError)
+                return assignmentFindResult.ToApiResponse();
+
+            var room = await roomRepository.FindFirst(x => x.Assignments.Contains(assignmentFindResult.Result.Id));
+
+            if (room == null)
+                return NotFound("room not found");
+
+            if (!room.Users.Contains(userId.Value) && room.OwnerId != userId.Value)
+                return BadRequest("No access to assignment");
+
+
             return assignmentFindResult.ToApiResponse();
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Assignment>>> GetAssignments([FromQuery] string roomId)
         {
+            var userId = HttpContext.GetUserId();
+
+            if (!userId.HasValue)
+                return BadRequest();
+
             var roomFindResult = await roomRepository.FindById(roomId);
 
             if (!roomFindResult.IsSuccess)
-            {
                 return NotFound(roomFindResult.ErrorMessage);
-            }
 
             var room = roomFindResult.Result;
+
+            if (!room.Users.Contains(userId.Value) && room.OwnerId != userId.Value)
+                return BadRequest("No access to assignment");
+
             var assignments = await assignmentRepository.FindRoomAssignments(room.Assignments);
-           
+
             return Ok(assignments);
         }
 
@@ -53,6 +77,11 @@ namespace StudentEstimateServiceApi.Controllers
         public async Task<ActionResult<Assignment>> CreateAssignment([FromBody] Assignment assignment,
             [FromQuery] string roomId)
         {
+            var userId = HttpContext.GetUserId();
+
+            if (!userId.HasValue)
+                return BadRequest();
+
             assignment.MaxGradeCountForWork ??= Constants.MaxGradeCountForWork;
             assignment.MinGradeCountForWork ??= Constants.MinGradeCountForWork;
             assignment.Id = ObjectId.GenerateNewId();
@@ -60,11 +89,12 @@ namespace StudentEstimateServiceApi.Controllers
             var roomFindResult = await roomRepository.FindById(roomId);
 
             if (!roomFindResult.IsSuccess)
-            {
                 return NotFound(roomFindResult.ErrorMessage);
-            }
 
             var room = roomFindResult.Result;
+
+            if (room.OwnerId != userId.Value)
+                return BadRequest("Only admin can create assignment");
 
             var createdAssignment = await assignmentRepository.Create(assignment);
 

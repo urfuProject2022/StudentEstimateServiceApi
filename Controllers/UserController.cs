@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using StudentEstimateServiceApi.Common;
 using StudentEstimateServiceApi.Common.Extensions;
 using StudentEstimateServiceApi.Models;
-using StudentEstimateServiceApi.Models.DTO;
 using StudentEstimateServiceApi.Repositories.Interfaces;
 
 namespace StudentEstimateServiceApi.Controllers
@@ -38,6 +37,20 @@ namespace StudentEstimateServiceApi.Controllers
         [HttpGet("{userId}")]
         public async Task<ActionResult<User>> GetUserById([FromRoute] string userId)
         {
+            var currentUserId = HttpContext.GetUserId();
+
+            if (!currentUserId.HasValue)
+                return BadRequest();
+
+            var currentUserResult = await userRepository.FindById(currentUserId.Value);
+            if (currentUserResult.IsError)
+                return BadRequest();
+
+            var currentUser = currentUserResult.Result;
+
+            if (currentUser.Role != Role.Admin && currentUserId.ToString() != userId)
+                return BadRequest();
+
             var findResult = await userRepository.FindById(userId);
             return findResult.ToApiResponse();
         }
@@ -47,23 +60,12 @@ namespace StudentEstimateServiceApi.Controllers
         {
             var roomFindResult = await roomRepository.FindById(roomId);
 
-            if (!roomFindResult.IsSuccess)
-            {
-                return NotFound(roomFindResult.ErrorMessage);
-            }
+            if (!roomFindResult.IsSuccess) return NotFound(roomFindResult.ErrorMessage);
 
             var room = roomFindResult.Result;
             var users = await userRepository.FindRoomUsers(room.Users);
 
             return Ok(users);
-        }
-
-        [HttpPost]
-        public async Task<ActionResult<User>> CreateUser([FromBody] User user)
-        {
-            var createdUser = await userRepository.Create(user);
-            
-            return Ok(createdUser);
         }
     }
 }

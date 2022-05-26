@@ -75,7 +75,7 @@ namespace StudentEstimateServiceApi
 
             services.AddSpaStaticFiles(x => { x.RootPath = "wwwroot"; });
 
-            services.AddControllers().AddNewtonsoftJson(x=>x.SerializerSettings.Converters.Add(new BsonIdConverter()));
+            services.AddControllers().AddNewtonsoftJson(x=>x.SerializerSettings.Converters.Add(new ObjectIdConverter()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

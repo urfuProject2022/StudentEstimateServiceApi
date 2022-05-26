@@ -8,7 +8,6 @@ using StudentEstimateServiceApi.Common;
 using StudentEstimateServiceApi.Common.Extensions;
 using StudentEstimateServiceApi.Infrastructure.Services.InviteService;
 using StudentEstimateServiceApi.Models;
-using StudentEstimateServiceApi.Models.DTO;
 using StudentEstimateServiceApi.Repositories.Interfaces;
 
 namespace StudentEstimateServiceApi.Controllers
@@ -33,8 +32,19 @@ namespace StudentEstimateServiceApi.Controllers
         [HttpGet("{roomId}")]
         public async Task<ActionResult<Room>> GetRoomById([FromRoute] string roomId)
         {
-            var findResult = await roomRepository.FindById(roomId);
-            return findResult.ToApiResponse();
+            var userId = HttpContext.GetUserId();
+
+            if (!userId.HasValue)
+                return BadRequest();
+
+            var roomResult = await roomRepository.FindById(roomId);
+            var room = roomResult.Result;
+
+            if (!room.Users.Contains(userId.Value) && room.OwnerId != userId.Value)
+                return BadRequest("No access to room");
+
+
+            return roomResult.ToApiResponse();
         }
 
         [HttpGet]
@@ -44,13 +54,10 @@ namespace StudentEstimateServiceApi.Controllers
 
             if (!userId.HasValue)
                 return BadRequest();
-            
+
             var userFindResult = await userRepository.FindById(userId.Value);
 
-            if (!userFindResult.IsSuccess)
-            {
-                return NotFound(userFindResult.ErrorMessage);
-            }
+            if (!userFindResult.IsSuccess) return NotFound(userFindResult.ErrorMessage);
 
             var rooms = await roomRepository.FindUserRooms(userFindResult.Result);
             return Ok(rooms);
@@ -73,14 +80,14 @@ namespace StudentEstimateServiceApi.Controllers
 
             room.Id = ObjectId.GenerateNewId();
             room.OwnerName = user.FullName;
-            
+
             var inviteUrl = inviteService.GenerateInviteUrl(HttpContext.Request.Host.Value, room.Id);
 
             if (inviteUrl.IsError)
                 return StatusCode(inviteUrl.StatusCode, inviteUrl.ErrorMessage);
 
             room.InviteLink = inviteUrl.Result;
-            
+
             var createdRoom = await roomRepository.Create(room);
 
             user.CreatedRooms.Add(room.Id);

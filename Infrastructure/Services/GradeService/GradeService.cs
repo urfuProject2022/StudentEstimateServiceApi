@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
 using MongoDB.Bson;
@@ -14,14 +14,20 @@ namespace StudentEstimateServiceApi.Infrastructure.Services.GradeService
         private readonly IGradeRepository gradeRepository;
         private readonly IWorkRepository workRepository;
         private readonly IAssignmentRepository assignmentRepository;
+        private readonly IRoomRepository roomRepository;
         private readonly IMapper mapper;
 
-        public GradeService(IGradeRepository gradeRepository, IWorkRepository workRepository,
-            IAssignmentRepository assignmentRepository, IMapper mapper)
+        public GradeService(
+            IGradeRepository gradeRepository,
+            IWorkRepository workRepository,
+            IAssignmentRepository assignmentRepository,
+            IRoomRepository roomRepository,
+            IMapper mapper)
         {
             this.gradeRepository = gradeRepository;
             this.workRepository = workRepository;
             this.assignmentRepository = assignmentRepository;
+            this.roomRepository = roomRepository;
             this.mapper = mapper;
         }
 
@@ -48,7 +54,11 @@ namespace StudentEstimateServiceApi.Infrastructure.Services.GradeService
 
             if (assignmentOperationResult.IsError)
                 return assignmentOperationResult;
-            
+
+            var hasAccess = await CheckAccessToRoomByAssignment(assignmentOperationResult.Result.Id, user);
+            if (hasAccess.IsError)
+                return hasAccess;
+
             var isGradeExists = gradeRepository.FindGrade(grade.GradedWorkId, user) != null;
 
             if (isGradeExists)
@@ -64,9 +74,16 @@ namespace StudentEstimateServiceApi.Infrastructure.Services.GradeService
             return OperationResult.Success();
         }
 
-        private static bool IsAssignmentExpired(DateTime assignmentExpirationTime)
+        private async Task<OperationResult> CheckAccessToRoomByAssignment(ObjectId assignmentId, ObjectId userId)
         {
-            return DateTime.Now.ToUniversalTime() > assignmentExpirationTime.ToUniversalTime();
+            var room = await roomRepository.FindFirst(x => x.Assignments.Contains(assignmentId));
+
+            if (room == null)
+                return OperationResult.Fail("room not found", (int)HttpStatusCode.NotFound);
+
+            if (!room.Users.Contains(userId) && room.OwnerId != userId)
+                return OperationResult.Fail("No access to assignment");
+            return OperationResult.Success();
         }
     }
 }
