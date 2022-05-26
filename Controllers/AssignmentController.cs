@@ -41,7 +41,7 @@ namespace StudentEstimateServiceApi.Controllers
             var room = await roomRepository.FindFirst(x => x.Assignments.Contains(assignmentFindResult.Result.Id));
 
             if (room == null)
-                return NotFound("room not found");
+                return NotFound("Room not found");
 
             if (!room.Users.Contains(userId.Value) && room.OwnerId != userId.Value)
                 return BadRequest("No access to assignment");

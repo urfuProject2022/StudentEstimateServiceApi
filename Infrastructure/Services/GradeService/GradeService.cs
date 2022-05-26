@@ -79,7 +79,7 @@ namespace StudentEstimateServiceApi.Infrastructure.Services.GradeService
             var room = await roomRepository.FindFirst(x => x.Assignments.Contains(assignmentId));
 
             if (room == null)
-                return OperationResult.Fail("room not found", (int)HttpStatusCode.NotFound);
+                return OperationResult.Fail("Room not found", (int)HttpStatusCode.NotFound);
 
             if (!room.Users.Contains(userId) && room.OwnerId != userId)
                 return OperationResult.Fail("No access to assignment");

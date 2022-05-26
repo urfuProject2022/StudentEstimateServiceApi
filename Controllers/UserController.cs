@@ -58,12 +58,21 @@ namespace StudentEstimateServiceApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUsersByRoomId([FromQuery] string roomId)
         {
+            var userId = HttpContext.GetUserId();
+
+            if (!userId.HasValue)
+                return BadRequest();
+
             var roomFindResult = await roomRepository.FindById(roomId);
 
             if (!roomFindResult.IsSuccess) 
                 return NotFound(roomFindResult.ErrorMessage);
 
             var room = roomFindResult.Result;
+
+            if (!room.Users.Contains(userId.Value) && room.OwnerId != userId.Value)
+                return BadRequest("No access to assignment");
+
             var users = await userRepository.FindRoomUsers(room.Users);
 
             return Ok(users);
