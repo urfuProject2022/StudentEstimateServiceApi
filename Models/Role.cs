@@ -1,6 +1,4 @@
-﻿using System.Runtime.Serialization;
-
-namespace StudentEstimateServiceApi.Models
+﻿namespace StudentEstimateServiceApi.Models
 {
     public enum Role
     {

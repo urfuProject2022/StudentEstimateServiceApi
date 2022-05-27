@@ -89,7 +89,8 @@ namespace StudentEstimateServiceApi.Infrastructure.Services.WorkService
             if (validateResult.IsError)
                 return validateResult.ToOperationResult<BatchWorksToGradeDto>();
 
-            var studentGradeInfo = await studentGradeInfoRepository.FindFirst(x => x.UserId == user);
+            var studentGradeInfo = await studentGradeInfoRepository.FindFirst(x => x.UserId == user
+                && x.AssignmentId == assignment.Id);
 
             if (studentGradeInfo == null)
             {
@@ -208,7 +209,8 @@ namespace StudentEstimateServiceApi.Infrastructure.Services.WorkService
             };
         }
 
-        private async Task<OperationResult> ValidateGetWorksToGrade(Assignment assignment, ObjectId roomId, ObjectId user)
+        private async Task<OperationResult> ValidateGetWorksToGrade(Assignment assignment, ObjectId roomId,
+            ObjectId user)
         {
             var findRoomResult = await roomRepository.FindById(roomId);
 

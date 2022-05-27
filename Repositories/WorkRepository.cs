@@ -22,7 +22,8 @@ namespace StudentEstimateServiceApi.Repositories
             return Collection.Find(filter).SingleOrDefaultAsync();
         }
 
-        public async Task<List<Work>> FindWorkForGrade(ObjectId assignment,ObjectId gradeSetter,int take = Constants.MaxGradeCountForWork)
+        public async Task<List<Work>> FindWorkForGrade(ObjectId assignment, ObjectId gradeSetter,
+            int take = Constants.MaxGradeCountForWork)
         {
             var works = await Collection
                 .Find(x => x.Assignment == assignment && x.UserId != gradeSetter && !x.GradedBy.Contains(gradeSetter))
@@ -33,8 +34,8 @@ namespace StudentEstimateServiceApi.Repositories
                 .Take(take);
 
             var worksWithGrades = works
-                .Where(x=>x.ReceivedMarks !=null && x.ReceivedMarks.Count != 0)
-                .OrderBy(x=>x.ReceivedMarks.Count)
+                .Where(x => x.ReceivedMarks != null && x.ReceivedMarks.Count != 0)
+                .OrderBy(x => x.ReceivedMarks.Count)
                 .Take(take);
 
             return worksWithOutGrades

@@ -3,17 +3,14 @@ using System.Reflection;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using MongoDB.Driver;
-using MongoDB.Driver.GridFS;
+using Newtonsoft.Json.Converters;
 using StudentEstimateServiceApi.Common;
 using StudentEstimateServiceApi.Infrastructure.Providers.WorkFileProvider;
-using StudentEstimateServiceApi.Infrastructure.Services;
 using StudentEstimateServiceApi.Infrastructure.Services.GradeService;
 using StudentEstimateServiceApi.Infrastructure.Services.InviteService;
 using StudentEstimateServiceApi.Infrastructure.Services.WorkService;
@@ -22,7 +19,6 @@ using StudentEstimateServiceApi.Models.DTO;
 using StudentEstimateServiceApi.Repositories;
 using StudentEstimateServiceApi.Repositories.Interfaces;
 using StudentEstimateServiceApi.Settings;
-using MongoDatabaseSettings = StudentEstimateServiceApi.Settings.MongoDatabaseSettings;
 
 namespace StudentEstimateServiceApi
 {
@@ -64,6 +60,7 @@ namespace StudentEstimateServiceApi
                 cfg.CreateMap<RegistrationDto, UserAuth>();
                 cfg.CreateMap<RegistrationDto, User>();
                 cfg.CreateMap<SetGradeDto, Grade>();
+                cfg.CreateMap<SubmitWorkDto, SubmitWork>();
             }, Array.Empty<Assembly>());
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(
@@ -75,7 +72,11 @@ namespace StudentEstimateServiceApi
 
             services.AddSpaStaticFiles(x => { x.RootPath = "wwwroot"; });
 
-            services.AddControllers().AddNewtonsoftJson(x=>x.SerializerSettings.Converters.Add(new ObjectIdConverter()));
+            services.AddControllers().AddNewtonsoftJson(options =>
+            {
+                options.SerializerSettings.Converters.Add(new StringEnumConverter());
+                options.SerializerSettings.Converters.Add(new ObjectIdConverter());
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

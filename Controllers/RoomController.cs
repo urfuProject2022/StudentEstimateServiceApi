@@ -8,6 +8,7 @@ using StudentEstimateServiceApi.Common;
 using StudentEstimateServiceApi.Common.Extensions;
 using StudentEstimateServiceApi.Infrastructure.Services.InviteService;
 using StudentEstimateServiceApi.Models;
+using StudentEstimateServiceApi.Models.DTO;
 using StudentEstimateServiceApi.Repositories.Interfaces;
 
 namespace StudentEstimateServiceApi.Controllers
@@ -38,13 +39,29 @@ namespace StudentEstimateServiceApi.Controllers
                 return BadRequest();
 
             var roomResult = await roomRepository.FindById(roomId);
+            if (roomResult.IsError)
+                return roomResult.ToApiResponse();
+
             var room = roomResult.Result;
 
             if (!room.Users.Contains(userId.Value) && room.OwnerId != userId.Value)
                 return BadRequest("No access to room");
 
-
             return roomResult.ToApiResponse();
+        }
+
+        [HttpGet("{roomId}/info")]
+        public async Task<ActionResult<RoomInfoDto>> GetRoomInfo([FromRoute] string roomId)
+        {
+            var roomResult = await roomRepository.FindById(roomId);
+            if (roomResult.IsError)
+                return roomResult.ToApiResponse();
+
+            var room = roomResult.Result;
+
+            var roomInfo = new RoomInfoDto() { Name = room.Name, OwnerName = room.OwnerName };
+
+            return Ok(roomInfo);
         }
 
         [HttpGet]
