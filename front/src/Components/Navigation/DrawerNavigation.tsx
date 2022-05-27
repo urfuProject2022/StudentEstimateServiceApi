@@ -19,6 +19,7 @@ import {useAuth} from "../ProtectedRoutes/AuthProvider";
 import {Button, ListItemButton} from "@mui/material";
 import {RoomInnerPage} from "../Rooms/RoomInnerPage";
 import {AssignmentPage} from "../Assignments/AssignmentPage";
+import {BackgroundTintStyle} from "../../Styles/SxStyles";
 
 const drawerWidth = 240;
 
@@ -99,8 +100,8 @@ export const DrawerNavigation: React.FC = () => {
             </List>
         </Drawer>
         <Box
-            component="main"
-            sx={{flexGrow: 1, bgcolor: 'background.default', p: 3}}
+            component="div"
+            sx={{flexGrow: 1, p: 3, minHeight: "100vh", ...BackgroundTintStyle}}
         >
             <Toolbar/>
 

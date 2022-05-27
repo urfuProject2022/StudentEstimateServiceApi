@@ -3,51 +3,59 @@ import {Button, Modal, TextField, Typography} from "@mui/material";
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import Box from "@mui/material/Box";
 import {Room} from "../../Models/Room";
-import {useSaveRoomMutation} from "../../ApiHooks/roomsApiHooks";
+import {useSaveRoomMutation} from "../../QueryFetches/ApiHooks";
 import "../../Styles/Modal.css"
-import {ModalStyle} from "../../Styles/SxStyles";
-import {useTheme} from "@mui/material/styles";
+import {DashedBorderStyle, ModalStyle, RoundedStyle} from "../../Styles/SxStyles";
+import {OverridableStringUnion} from "@mui/types";
+import {ButtonPropsVariantOverrides} from "@mui/material/Button/Button";
+import {useSnackbar} from "notistack";
 
-export const AddRoomButton: React.FC = () => {
+export const AddRoomButton: React.FC<{
+    variant?: OverridableStringUnion<'box' | 'button', ButtonPropsVariantOverrides>
+}> = ({variant}) => {
     const [modalVisible, setModalVisible] = useState(false)
     const [roomName, setRoomName] = useState("")
     const [roomDesc, setRoomDesc] = useState("")
+    const {enqueueSnackbar} = useSnackbar();
 
-    const saveMutation = useSaveRoomMutation()
-    const theme = useTheme()
+    const saveMutation = useSaveRoomMutation(() => enqueueSnackbar("Комната успешно создана!", {variant: "success"}))
 
     const onSubmit = async (roomName: string, roomDescription: string) => {
-        let room: Room = {name: roomName, description: roomDescription} 
+        let room: Room = {name: roomName, description: roomDescription}
         await saveMutation.mutateAsync(room)
         setModalVisible(false)
     }
 
     return <>
-        <Box
-            onClick={() => setModalVisible(true)}
-            sx={{
-                m: 0,
-                minHeight: '20vh',
-                bgcolor: '#FAFAFA',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                border: 'dashed',
-                borderColor: theme.palette.primary.light,
-                opacity: '0.5',
-                borderRadius: 2,
-                boxShadow: 0,
-                ":hover": {
-                    cursor: 'pointer',
-                    opacity: '1',
-                    boxShadow: 1
-                }
-            }}>
-            <AddRoundedIcon sx={{
-                width: '48px',
-                height: '48px',
-            }}/>
-        </Box>
+        {variant === "box" &&
+            <Box
+                onClick={() => setModalVisible(true)}
+                sx={{
+                    m: 0,
+                    minHeight: '20vh',
+                    bgcolor: '#FAFAFA',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    opacity: '0.5',
+                    ...DashedBorderStyle,
+                    ...RoundedStyle,
+                    boxShadow: 0,
+                    ":hover": {
+                        cursor: 'pointer',
+                        opacity: '1',
+                        boxShadow: 1
+                    }
+                }}>
+                <AddRoundedIcon sx={{
+                    width: '48px',
+                    height: '48px',
+                }}/>
+            </Box>
+        }
+        {variant === "button" &&
+            <Button onClick={() => setModalVisible(true)}
+                    size="large" variant="contained">Создать комнату</Button>}
         <Modal
             disableAutoFocus
             open={modalVisible}
@@ -62,9 +70,11 @@ export const AddRoomButton: React.FC = () => {
                     id={"login"}
                     autoFocus={true}/>
                 <TextField
+                    multiline
+                    maxRows={5}
                     label={"Описание"}
                     onChange={x => setRoomDesc(x.target.value)}
-                    id={"desc"} />
+                    id={"desc"}/>
 
                 <Button variant={"contained"}
                         disabled={!roomName}

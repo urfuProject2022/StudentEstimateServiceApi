@@ -1,6 +1,6 @@
 import settings from "../settings.json";
 import {RegistrationModel} from "../Models/RegistrationModel";
-import {Work} from "../Models/Work";
+import {SubmitWork} from "../Models/SubmitWork";
 import axios from "axios";
 
 export const loginRequest = (login: string, password: string) => {
@@ -29,17 +29,21 @@ export const signedInUserRequest = () => {
     })
 }
 
-export const submitWorkRequest = (work: Work) => {
+export const submitWorkRequest = (work: SubmitWork) => {
     let formData = new FormData();
     formData.append("AssignmentId", work.assignmentId)
     formData.append("RoomId", work.roomId)
     formData.append("TextAnswer", work.textAnswer)
     work.fileAnswers.forEach(file => formData.append("FileAnswers", file))
-    return axios.post('work/submit', formData, {
+    return axios.post('works/submit', formData, {
         headers: {"Content-Type": "multipart/form-data"}
     })
 }
 
 export const acceptInviteRequest = (roomId: string) => {
     return axios.get(`invites/accept?roomId=${roomId}`)
+}
+
+export const setGradeRequest = (score: number, gradedWorkId: string, assignmentId: string) => {
+    return axios.post('grade/set', {score, gradedWorkId, assignmentId})
 }

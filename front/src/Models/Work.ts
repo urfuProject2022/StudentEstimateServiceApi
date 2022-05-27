@@ -1,6 +1,7 @@
+import {FileDto} from "./FileDto";
+
 export type Work = {
-    assignmentId: string,
-    roomId: string,
+    workId: string,
     textAnswer: string,
-    fileAnswers: File[]
+    fileAnswers: FileDto[]
 }

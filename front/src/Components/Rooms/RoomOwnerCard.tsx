@@ -6,6 +6,7 @@ import PhoneRoundedIcon from '@mui/icons-material/PhoneRounded';
 import TelegramIcon from '@mui/icons-material/Telegram';
 import MailRoundedIcon from '@mui/icons-material/MailRounded';
 import {useTheme} from '@mui/material/styles';
+import {RoundedStyle} from "../../Styles/SxStyles";
 
 
 export const RoomOwnerCard: React.FC<{
@@ -14,10 +15,7 @@ export const RoomOwnerCard: React.FC<{
     const theme = useTheme();
 
     return <>
-        <Card variant="outlined" sx={{
-            flexBasis: "50%",
-            borderRadius: 2,
-        }}>
+        <Card variant={"outlined"} sx={{flexBasis: "50%", ...RoundedStyle}}>
             <Typography gutterBottom variant="h5" component="div" padding={2}
                         paddingBottom={0}>Преподаватель</Typography>
             <Stack>

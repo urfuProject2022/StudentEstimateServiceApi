@@ -4,6 +4,9 @@ import {Room} from "../Models/Room";
 import delay from "delay"
 import {Assignment} from "../Models/Assignment";
 import {User} from "../Models/User";
+import {Work} from "../Models/Work";
+import {BatchWorksToGrade} from "../Models/BatchWorksToGrade";
+import {RoomInfo} from "../Models/RoomInfo";
 
 export const useRoomsQuery = () => {
     return useQuery<Room[], AxiosError>('rooms', async () => {
@@ -18,10 +21,18 @@ export const useRoomQuery = (roomId: string) => {
         await delay(500)
         const res = await axios.get(`/rooms/${roomId}`)
         return res.data
-    })
+    }, {retry: false})
 }
 
-export const useSaveRoomMutation = () => {
+export const useRoomInfoQuery = (roomId: string) => {
+    return useQuery<RoomInfo, AxiosError>(["invite", {roomId}], async () => {
+        await delay(500)
+        const res = await axios.get(`rooms/${roomId}/info`)
+        return res.data
+    }, {retry: false})
+}
+
+export const useSaveRoomMutation = (onSuccess?: () => void) => {
     const queryClient = useQueryClient()
 
     return useMutation<Room, AxiosError, Room>(async (room) => {
@@ -33,6 +44,7 @@ export const useSaveRoomMutation = () => {
                 rooms.push(data)
                 return [...rooms]
             })
+            if (onSuccess) onSuccess()
         }
     })
 }
@@ -42,7 +54,7 @@ export const useAssignmentsQuery = (roomId: string) => {
         await delay(500)
         const res = await axios.get(`/assignments?roomId=${roomId}`)
         return res.data
-    })
+    }, {retry: false})
 }
 
 export const useAssignmentQuery = (assignmentId: string) => {
@@ -50,21 +62,28 @@ export const useAssignmentQuery = (assignmentId: string) => {
         await delay(500)
         const res = await axios.get(`/assignments/${assignmentId}`)
         return res.data
-    })
+    }, {retry: false})
 }
 
-export const useSaveAssignmentMutation = (roomId: string) => {
+export const useSaveAssignmentMutation = (roomId: string, onSuccess: () => void) => {
     const queryClient = useQueryClient()
 
     return useMutation<Assignment, AxiosError, Assignment>(async (assignment) => {
-        const res = await axios.post(`/assignments?roomId=${roomId}`, assignment)
+        const dto = {
+            ...assignment,
+            minGradeCountForWork: assignment.gradeCount,
+            maxGradeCountForWork: assignment.gradeCount
+        }
+        console.log(dto)
+        const res = await axios.post(`/assignments?roomId=${roomId}`, dto)
         return res.data
-    },{
+    }, {
         onSuccess(data) {
             queryClient.setQueryData<Assignment[]>(["assignments", {roomId}], assignments => {
                 assignments.push(data)
                 return [...assignments]
             })
+            if (onSuccess) onSuccess()
         }
     })
 }
@@ -75,4 +94,20 @@ export const useUsersQuery = (roomId: string) => {
         const res = await axios.get(`/users?roomId=${roomId}`)
         return res.data
     })
+}
+
+export const useSubmittedWorkQuery = (assignmentId: string) => {
+    return useQuery<Work, AxiosError>(["work", {assignmentId}], async () => {
+        await delay(500)
+        const res = await axios.get(`works/userWork?assignment=${assignmentId}`)
+        return res.data
+    }, {retry: false})
+}
+
+export const useWorksToGradeQuery = (assignmentId: string, roomId: string) => {
+    return useQuery<BatchWorksToGrade, AxiosError>(["works", {assignmentId}], async () => {
+        await delay(500)
+        const res = await axios.get(`works/to-grade?assignment=${assignmentId}&room=${roomId}`)
+        return res.data
+    }, {retry: false})
 }

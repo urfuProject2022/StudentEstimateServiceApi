@@ -3,6 +3,7 @@ import {getCookie, removeCookie} from "typescript-cookie";
 import {loginRequest, registrationRequest, signedInUserRequest} from "../../Utils/Requests";
 import {User} from "../../Models/User";
 import {RegistrationModel} from "../../Models/RegistrationModel";
+import {useQueryClient} from "react-query";
 
 interface AuthContextType {
     isAuthorized: boolean
@@ -16,6 +17,7 @@ let AuthContext = React.createContext<AuthContextType>(null);
 
 export function AuthProvider({children}: { children: React.ReactNode }) {
     let cookie = getCookie("auth")
+    let queryClient = useQueryClient()
     let [cookieState, setCookieState] = useState(cookie !== undefined)
     let [user, setUser] = useState<User>(null)
 
@@ -49,6 +51,7 @@ export function AuthProvider({children}: { children: React.ReactNode }) {
     let signOut = () => {
         removeCookie("auth")
         setCookieState(false)
+        queryClient.removeQueries()
     }
 
     let register = (dto: RegistrationModel) => {

@@ -2,10 +2,12 @@ import React, {useState} from "react";
 import {useLocation, useNavigate} from "react-router-dom";
 import {Button, Card, CircularProgress, Stack} from "@mui/material";
 import Typography from "@mui/material/Typography";
-import {useRoomQuery} from "../../ApiHooks/roomsApiHooks";
-import {CircularProgressStyle} from "../../Styles/SxStyles";
+import {useRoomInfoQuery, useRoomQuery} from "../../QueryFetches/ApiHooks";
 import Divider from "@mui/material/Divider";
 import {acceptInviteRequest} from "../../Utils/Requests";
+import {RoundedStyle} from "../../Styles/SxStyles";
+import {ErrorPage} from "../Error/ErrorPage";
+import {useSnackbar} from "notistack";
 
 export const InviteAcceptPage: React.FC = () => {
     const {search} = useLocation()
@@ -13,17 +15,23 @@ export const InviteAcceptPage: React.FC = () => {
     const roomId = queryParams.get("roomId");
 
     const [errorMessage, setErrorMessage] = useState("")
+    const {enqueueSnackbar} = useSnackbar()
     const navigate = useNavigate()
-    const {data: room, isLoading} = useRoomQuery(roomId)
+    const {data: room, isLoading, isError} = useRoomInfoQuery(roomId)
 
     const onClick = () => {
         acceptInviteRequest(roomId)
             .then(_ => {
                 navigate(`../../rooms/${roomId}`, { replace: true })
+                enqueueSnackbar("Вы успешно присоединены к комнате", {variant: "success"})
             })
             .catch(error => {
                 setErrorMessage(error.response.data)
             })
+    }
+
+    if (isError) {
+        return <ErrorPage/>
     }
 
     return <>
@@ -38,7 +46,7 @@ export const InviteAcceptPage: React.FC = () => {
                 top: '50%',
                 left: '50%',
                 transform: 'translate(-50%, -50%)',
-                borderRadius: 2,
+                ...RoundedStyle,
                 maxWidth: 500,
                 minWidth: 450
             }}>

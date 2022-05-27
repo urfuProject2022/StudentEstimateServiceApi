@@ -11,12 +11,13 @@ import {
     Stack,
     Tooltip
 } from "@mui/material";
-import {useUsersQuery} from "../../ApiHooks/roomsApiHooks";
+import {useUsersQuery} from "../../QueryFetches/ApiHooks";
 import {User} from "../../Models/User";
 import Typography from "@mui/material/Typography";
 import LinkIcon from '@mui/icons-material/Link';
 import PermIdentityRoundedIcon from '@mui/icons-material/PermIdentityRounded';
 import GroupAddRoundedIcon from '@mui/icons-material/GroupAddRounded';
+import {RoundedStyle} from "../../Styles/SxStyles";
 
 export const UserList: React.FC<{
     roomId: string
@@ -45,7 +46,7 @@ export const UserList: React.FC<{
     return <>
         <Card variant="outlined" sx={{
             flexBasis: "50%",
-            borderRadius: 2,
+            ...RoundedStyle,
             display: 'flex',
             flexDirection: 'column'
         }}>
@@ -88,7 +89,7 @@ export const UserList: React.FC<{
                                    py: 4
                                }}>
                             <GroupAddRoundedIcon sx={{width: "48px", height: "48px"}}/>
-                            <Typography variant={"h5"}>Поделитесь ссылкой, чтобы пригласить студентов</Typography>
+                            <Typography variant={"h5"} textAlign={"center"}>Поделитесь ссылкой, чтобы пригласить студентов</Typography>
                         </Stack>}
                 </>
             }
