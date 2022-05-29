@@ -1,4 +1,6 @@
-﻿using MongoDB.Bson;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using MongoDB.Bson;
 using StudentEstimateServiceApi.Models;
 
 namespace StudentEstimateServiceApi.Repositories.Interfaces
@@ -7,5 +9,6 @@ namespace StudentEstimateServiceApi.Repositories.Interfaces
     {
         Grade FindGrade(ObjectId workId, ObjectId studentSetterId);
         long GetGradesSettedByUser(ObjectId user, ObjectId assignmentId);
+        Task<List<Grade>> FindMany(IEnumerable<ObjectId> batch);
     }
 }
