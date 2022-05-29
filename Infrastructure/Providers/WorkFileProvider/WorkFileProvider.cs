@@ -43,7 +43,7 @@ namespace StudentEstimateServiceApi.Infrastructure.Providers.WorkFileProvider
             var fileId = ObjectId.GenerateNewId();
 
             var sourceReadStream = file.OpenReadStream();
-            await gridFsClient.UploadFromStreamAsync(fileId, file.Name, sourceReadStream, options);
+            await gridFsClient.UploadFromStreamAsync(fileId, file.FileName, sourceReadStream, options);
             sourceReadStream.Close();
 
             return fileId;

@@ -2,29 +2,31 @@ import React, {useState} from "react";
 import {Button, Modal, TextField, Typography} from "@mui/material";
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import Box from "@mui/material/Box";
-import {useSaveAssignmentMutation} from "../../ApiHooks/roomsApiHooks";
+import {useSaveAssignmentMutation} from "../../QueryFetches/ApiHooks";
 import "../../Styles/Modal.css"
 import {Assignment} from "../../Models/Assignment";
 import {DateTimePicker} from "@mui/x-date-pickers";
-import {ModalStyle} from "../../Styles/SxStyles";
+import {DashedBorderStyle, ModalStyle, RoundedStyle} from "../../Styles/SxStyles";
 import {addMinutes} from "date-fns";
 import {OverridableStringUnion} from "@mui/types";
 import {ButtonPropsVariantOverrides} from "@mui/material/Button/Button";
-import {useTheme} from "@mui/material/styles";
+import {useSnackbar} from "notistack";
 
 export const AddAssignmentButton: React.FC<{
     roomId: string,
     variant?: OverridableStringUnion<'box' | 'button', ButtonPropsVariantOverrides>
 }> = ({roomId, variant}) => {
-    const theme = useTheme()
 
+    const {enqueueSnackbar} = useSnackbar();
     const [modalVisible, setModalVisible] = useState(false)
     const [assignment, setAssignment] = useState<Assignment>({
         title: "",
         description: "",
         expirationTime: "",
+        gradeCount: 4
     })
-    const [date, setDate] = React.useState<Date | null>(
+
+    const [date, setDate] = useState<Date | null>(
         addMinutes(new Date(), 10)
     );
 
@@ -32,13 +34,14 @@ export const AddAssignmentButton: React.FC<{
         setAssignment({...assignment, [prop]: event.target.value});
     };
 
-    const saveMutation = useSaveAssignmentMutation(roomId)
+    const saveMutation = useSaveAssignmentMutation(roomId, ()=> enqueueSnackbar("Задание успешно создано!", {variant: "success"}))
 
-    const onSubmit = async (assignmentName: string, assignmentDescription: string, expirationTime: string) => {
+    const onSubmit = async (assignmentName: string, assignmentDescription: string, expirationTime: string, gradeCount: number) => {
         let assignment: Assignment = {
             title: assignmentName,
             description: assignmentDescription,
-            expirationTime: expirationTime
+            expirationTime: expirationTime,
+            gradeCount: gradeCount
         }
         await saveMutation.mutateAsync(assignment)
         setModalVisible(false)
@@ -55,10 +58,9 @@ export const AddAssignmentButton: React.FC<{
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    border: 'dashed',
-                    borderColor: theme.palette.primary.light,
                     opacity: '0.5',
-                    borderRadius: 2,
+                    ...DashedBorderStyle,
+                    ...RoundedStyle,
                     boxShadow: 0,
                     ":hover": {
                         cursor: 'pointer',
@@ -90,10 +92,25 @@ export const AddAssignmentButton: React.FC<{
                     id={"login"}
                     autoFocus={true}/>
                 <TextField
+                    multiline
+                    maxRows={5}
                     label={"Описание"}
                     onChange={handleChange("description")}
                     id={"desc"}/>
 
+                <TextField
+                    type={"number"}
+                    label={"Количество оценок"}
+                    value={assignment.gradeCount}
+                    onChange={handleChange("gradeCount")}
+                    inputProps={{
+                        step: 1,
+                        min: 1,
+                        max: 30,
+                        type: 'number',
+                        'aria-labelledby': 'input-slider',
+                    }}
+                />
 
                 <DateTimePicker
                     label={"Срок сдачи"}
@@ -108,7 +125,7 @@ export const AddAssignmentButton: React.FC<{
 
                 <Button variant={"contained"}
                         disabled={!assignment.title}
-                        onClick={async () => await onSubmit(assignment.title, assignment.description, date.toISOString())}
+                        onClick={async () => await onSubmit(assignment.title, assignment.description, date.toISOString(), assignment.gradeCount)}
                         type="submit">
                     Создать
                 </Button>

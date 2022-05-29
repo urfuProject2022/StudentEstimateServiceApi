@@ -5,14 +5,18 @@ import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
 import Typography from "@mui/material/Typography";
 import {Assignment} from "../../Models/Assignment";
 import {format} from 'date-fns-tz'
-import {parseISO} from "date-fns";
+import {parseISO, differenceInDays} from "date-fns";
+import { red } from '@mui/material/colors';
+import {GrayBorderStyle, MediumSizeIcon, OnHoverColoredWithShadowStyle, RoundedStyle} from "../../Styles/SxStyles";
 
 export const AssignmentItem: React.FC<{
     assignment: Assignment;
 }> = ({assignment}) => {
     const navigate = useNavigate()
     const location = useLocation()
-    const utcDate = useMemo(() => format(parseISO(assignment.expirationTime), 'dd.MM.yyyy HH:mm'), [assignment])
+    const assignmentDate = useMemo(() => parseISO(assignment.expirationTime), [assignment])
+    const utcDate = useMemo(() => format(assignmentDate, 'dd.MM.yyyy HH:mm'), [assignmentDate])
+    const diffInDays = useMemo(() => differenceInDays(assignmentDate, new Date()),[])
 
     return <Card
         onClick={() => {
@@ -24,14 +28,9 @@ export const AssignmentItem: React.FC<{
             py: 2,
             bgcolor: '#fcfcfc',
             color: 'grey.900',
-            boxShadow: 0,
-            border: 'solid 2px #ECEFF1',
-            borderRadius: 2,
-            ":hover": {
-                cursor: 'pointer',
-                bgcolor: 'rgba(25, 118, 210, 0.08)',
-                boxShadow: 1
-            },
+            ...GrayBorderStyle,
+            ...RoundedStyle,
+            ...OnHoverColoredWithShadowStyle
         }}>
         <div style={{
             display: "flex",
@@ -53,14 +52,11 @@ export const AssignmentItem: React.FC<{
                     overflow: 'hidden',
                 }}>{assignment.title}</Typography>
 
-                <Typography variant={"body1"} color={"#616161"}>
+                <Typography variant={"body1"} color={diffInDays >= 1 ? "#616161" : red["500"]}>
                     Дедлайн: {utcDate}
                 </Typography>
             </div>
-            <ArrowForwardRoundedIcon sx={{
-                width: '36px',
-                height: '36px',
-            }}/>
+            <ArrowForwardRoundedIcon sx={MediumSizeIcon}/>
         </div>
     </Card>
 }

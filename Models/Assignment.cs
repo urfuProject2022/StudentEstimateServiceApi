@@ -12,7 +12,7 @@ namespace StudentEstimateServiceApi.Models
 
         public string Title { get; set; }
         public string Description { get; set; }
-        public List<ObjectId> Works { get; set; }
+        public List<ObjectId> Works { get; set; } = new();
         public DateTime ExpirationTime { get; set; }
         public int? MinGradeCountForWork { get; set; }
         public int? MaxGradeCountForWork { get; set; }

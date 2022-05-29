@@ -4,6 +4,14 @@ import {Card} from "@mui/material";
 import {useNavigate} from "react-router-dom";
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
 import Typography from "@mui/material/Typography";
+import "../../Styles/Auth.css"
+import {
+    GrayBorderStyle,
+    MediumSizeIcon,
+    OnHoverColoredWithShadowStyle,
+    RoundedStyle,
+    AnimatedSizeStyle
+} from "../../Styles/SxStyles";
 
 export const RoomItem: React.FC<{
     room: Room;
@@ -19,14 +27,9 @@ export const RoomItem: React.FC<{
             py: 2,
             bgcolor: '#fcfcfc',
             color: 'grey.900',
-            boxShadow: 0,
-            border: 'solid 2px #ECEFF1',
-            borderRadius: 2,
-            ":hover": {
-                cursor: 'pointer',
-                bgcolor: 'rgba(25, 118, 210, 0.08)',
-                boxShadow: 1
-            },
+            ...GrayBorderStyle,
+            ...RoundedStyle,
+            ...AnimatedSizeStyle,
         }}>
         <div style={{
             display: "flex",
@@ -54,10 +57,7 @@ export const RoomItem: React.FC<{
                     Количество заданий: {room.assignments.length}
                 </Typography>
             </div>
-            <ArrowForwardRoundedIcon sx={{
-                width: '36px',
-                height: '36px',
-            }}/>
+            <ArrowForwardRoundedIcon sx={MediumSizeIcon}/>
         </div>
     </Card>
 }

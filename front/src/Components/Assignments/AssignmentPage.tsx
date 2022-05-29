@@ -1,13 +1,24 @@
 import React, {useState} from "react";
-import {useAssignmentQuery} from "../../ApiHooks/roomsApiHooks";
+import {useAssignmentQuery, useSubmittedWorkQuery} from "../../QueryFetches/ApiHooks";
 import {useParams} from "react-router-dom";
-import {CircularProgress, Stack, TextField, Typography} from "@mui/material";
+import {CircularProgress, Stack, Typography} from "@mui/material";
 import {CircularProgressStyle} from "../../Styles/SxStyles";
+import {WorkUploadCard} from "../Works/WorkUploadCard";
+import {WorksToGradeList} from "../Works/WorksToGradeList";
+import {useAuth} from "../ProtectedRoutes/AuthProvider";
+import {ErrorPage} from "../Error/ErrorPage";
+
 
 export const AssignmentPage: React.FC = () => {
-    const {assignmentId} = useParams()
-    const {data: assignment, isLoading} = useAssignmentQuery(assignmentId)
-    const [workText, setWorkText] = useState("");
+    const auth = useAuth()
+    const {roomId, assignmentId} = useParams()
+    const [isSubmitted, setIsSubmitted] = useState(false)
+    const {data: assignment, isLoading, isError} = useAssignmentQuery(assignmentId)
+    const {data: work, isLoading: isLoadingWork, isError: isErrorWork} = useSubmittedWorkQuery(assignmentId)
+
+    if (isError) {
+        return <ErrorPage/>
+    }
 
     return <>
         {isLoading ? <CircularProgress sx={CircularProgressStyle}/> :
@@ -15,8 +26,18 @@ export const AssignmentPage: React.FC = () => {
                 <Stack spacing={2}>
                     <Typography variant={"h3"}>{assignment.title}</Typography>
                     <Typography variant={"h5"}>{assignment.description}</Typography>
-                    <TextField label={"Ваша работа"} multiline autoFocus value={workText} minRows={4} maxRows={10}
-                               onChange={x => setWorkText(x.target.value)}/>
+                    {auth.user.role == "Admin" ? <>
+                            <div>Затычка для админа, тут будет список с работами всех юзеров</div>
+                        </> :
+                        <>
+                            <WorkUploadCard assignmentId={assignmentId} roomId={roomId} work={work}
+                                            isLoading={isLoadingWork}
+                                            isError={isErrorWork}
+                                            onSubmitted={() => setIsSubmitted(true)}/>
+                            { (isSubmitted || (!isLoadingWork && !isErrorWork && work)) ?
+                                <WorksToGradeList assignmentId={assignmentId} roomId={roomId}/>: <></>}
+                        </>
+                    }
                 </Stack>
             </>}
     </>

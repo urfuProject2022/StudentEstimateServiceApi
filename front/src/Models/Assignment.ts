@@ -4,4 +4,5 @@ export type Assignment = {
     description: string
     works?: string
     expirationTime: string
+    gradeCount: number
 }

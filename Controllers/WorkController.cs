@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,33 +17,42 @@ namespace StudentEstimateServiceApi.Controllers
     public class WorkController : Controller
     {
         private readonly IWorkService workService;
+        private readonly IMapper mapper;
 
-        public WorkController(IWorkService workService)
+        public WorkController(IWorkService workService, IMapper mapper)
         {
             this.workService = workService;
+            this.mapper = mapper;
         }
 
         [HttpPost("submit")]
-        public async Task<ActionResult> Submit([FromBody] SubmitWork submitWork)
+        public async Task<ActionResult> Submit(SubmitWorkDto submitWorkDto)
         {
             var userId = HttpContext.GetUserId();
 
             if (!userId.HasValue)
                 return BadRequest();
 
+            var submitWork = mapper.Map<SubmitWork>(submitWorkDto);
             var submitOperationResult = await workService.Submit(submitWork, userId.Value);
+            
             return submitOperationResult.ToApiResponse();
         }
 
         [HttpGet("to-grade")]
-        public async Task<ActionResult> GetWorkToGrade([FromBody] GetWorksToGrade worksToGradeDto)
+        public async Task<ActionResult<BatchWorksToGradeDto>> GetWorkToGrade([FromQuery] string assignment,
+            [FromQuery] string room)
         {
             var userId = HttpContext.GetUserId();
 
-            if (!userId.HasValue)
+            if (!userId.HasValue ||
+                !ObjectId.TryParse(assignment, out var assignmentId) ||
+                !ObjectId.TryParse(room, out var roomId))
                 return BadRequest();
 
-            var worksToGradeOperationResult = await workService.GetWorksToGrade(worksToGradeDto, userId.Value);
+            var getWorksToGrade = new GetWorksToGrade() { Assignment = assignmentId, Room = roomId };
+
+            var worksToGradeOperationResult = await workService.GetWorksToGrade(getWorksToGrade, userId.Value);
 
             return worksToGradeOperationResult.ToApiResponse();
         }

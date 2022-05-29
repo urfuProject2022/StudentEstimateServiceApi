@@ -10,6 +10,9 @@ import {DrawerNavigation} from "./Components/Navigation/DrawerNavigation";
 import axios from "axios";
 import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider/LocalizationProvider';
 import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
+import {InviteAcceptPage} from "./Components/Invites/InviteAcceptPage";
+import {SnackbarProvider} from "notistack";
+import {Grow} from "@mui/material";
 
 axios.defaults.baseURL = 'https://localhost:5001/api'
 
@@ -23,17 +26,23 @@ const queryClient = new QueryClient({
 
 function App() {
     return (
-        <AuthProvider>
-            <QueryClientProvider client={queryClient}>
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                    <Routes>
-                        <Route path="login" element={<Login/>}/>
-                        <Route path="registration" element={<Registration/>}/>
-                        <Route path="/*" element={<RequireAuth><DrawerNavigation/></RequireAuth>}/>
-                    </Routes>
-                </LocalizationProvider>
-            </QueryClientProvider>
-        </AuthProvider>
+        <QueryClientProvider client={queryClient}>
+            <AuthProvider>
+                <SnackbarProvider anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                }} TransitionComponent={Grow}>
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                        <Routes>
+                            <Route path="login" element={<Login/>}/>
+                            <Route path="registration" element={<Registration/>}/>
+                            <Route path="/*" element={<RequireAuth><DrawerNavigation/></RequireAuth>}/>
+                            <Route path="invites/accept" element={<RequireAuth><InviteAcceptPage/></RequireAuth>}/>
+                        </Routes>
+                    </LocalizationProvider>
+                </SnackbarProvider>
+            </AuthProvider>
+        </QueryClientProvider>
     );
 }
 
