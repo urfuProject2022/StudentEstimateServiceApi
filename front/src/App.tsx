@@ -14,7 +14,7 @@ import {InviteAcceptPage} from "./Components/Invites/InviteAcceptPage";
 import {SnackbarProvider} from "notistack";
 import {Grow} from "@mui/material";
 
-axios.defaults.baseURL = 'https://localhost:5001/api'
+axios.defaults.baseURL = window.location.origin + "/api"
 
 const queryClient = new QueryClient({
     defaultOptions: {

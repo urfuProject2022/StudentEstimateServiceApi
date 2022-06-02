@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import {useLocation, useNavigate} from "react-router-dom";
 import {Button, Card, CircularProgress, Stack} from "@mui/material";
 import Typography from "@mui/material/Typography";
-import {useRoomInfoQuery, useRoomQuery} from "../../QueryFetches/ApiHooks";
+import {useRoomInfoQuery} from "../../QueryFetches/ApiHooks";
 import Divider from "@mui/material/Divider";
 import {acceptInviteRequest} from "../../Utils/Requests";
 import {RoundedStyle} from "../../Styles/SxStyles";

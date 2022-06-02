@@ -93,7 +93,6 @@ namespace StudentEstimateServiceApi
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             if (!env.IsDevelopment())
@@ -107,9 +106,10 @@ namespace StudentEstimateServiceApi
             app.MapWhen(context => context.Request.Path.StartsWithSegments("/api"),
                 _ => { app.UseEndpoints(x => x.MapControllers()); });
 
+            app.UseSpaStaticFiles();
             app.UseSpa(x =>
             {
-                x.Options.SourcePath = @"front";
+                /*x.Options.SourcePath = @"front";*/
 
                 if (!env.IsProduction())
                     x.UseReactDevelopmentServer("start");

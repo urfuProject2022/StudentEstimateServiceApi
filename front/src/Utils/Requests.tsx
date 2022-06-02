@@ -1,10 +1,9 @@
-import settings from "../settings.json";
 import {RegistrationModel} from "../Models/RegistrationModel";
 import {SubmitWork} from "../Models/SubmitWork";
 import axios from "axios";
 
 export const loginRequest = (login: string, password: string) => {
-    return fetch(settings.serverEndpoint + "/auth/login", {
+    return fetch(window.location.origin + "/api/auth/login", {
         method: "POST",
         headers: {
             'login': login,
@@ -14,7 +13,7 @@ export const loginRequest = (login: string, password: string) => {
 }
 
 export const registrationRequest = (registrationDto: RegistrationModel) => {
-    return fetch(settings.serverEndpoint + "/auth/register", {
+    return fetch(window.location.origin + "/api/auth/register", {
         method: 'POST',
         headers: new Headers({
             'Content-Type': 'application/json',
@@ -24,7 +23,7 @@ export const registrationRequest = (registrationDto: RegistrationModel) => {
 }
 
 export const signedInUserRequest = () => {
-    return fetch(settings.serverEndpoint + "/users/me", {
+    return fetch(window.location.origin + "/api/users/me", {
         method: 'GET'
     })
 }

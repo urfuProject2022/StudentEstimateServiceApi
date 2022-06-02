@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using StudentEstimateServiceApi.Common;
-using StudentEstimateServiceApi.Models;
 using StudentEstimateServiceApi.Repositories.Interfaces;
 using StudentEstimateServiceApi.Settings;
 

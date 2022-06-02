@@ -74,7 +74,6 @@ export const useSaveAssignmentMutation = (roomId: string, onSuccess: () => void)
             minGradeCountForWork: assignment.gradeCount,
             maxGradeCountForWork: assignment.gradeCount
         }
-        console.log(dto)
         const res = await axios.post(`/assignments?roomId=${roomId}`, dto)
         return res.data
     }, {

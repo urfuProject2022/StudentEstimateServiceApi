@@ -130,7 +130,7 @@ export const WorkUploadCard: React.FC<{
                                                 <input {...getInputProps()} />
                                                 <Card variant={"outlined"} sx={
                                                     [RoundedStyle,
-                                                    OnHoverColoredStyle]
+                                                        OnHoverColoredStyle]
                                                 }>
                                                     <Stack alignItems="center" justifyContent="center"
                                                            spacing={2}
@@ -159,7 +159,6 @@ export const WorkUploadCard: React.FC<{
                                                        onDelete={onDelete} isDeletable={isEnabled}/>
                             </Stack>
                         </Stack>
-
                     </Stack>
                 }
             </CardContent>
