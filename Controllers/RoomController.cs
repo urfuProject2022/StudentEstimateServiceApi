@@ -113,5 +113,37 @@ namespace StudentEstimateServiceApi.Controllers
 
             return Ok(createdRoom);
         }
+
+        [HttpDelete]
+        public async Task<ActionResult> DeleteRoom([FromQuery] string roomId)
+        {
+            var userId = HttpContext.GetUserId();
+
+            if (!userId.HasValue)
+                return BadRequest();
+
+            var deleteResult = await roomRepository.Delete(roomId).ConfigureAwait(false);
+            return deleteResult.ToApiResponse();
+        }
+
+        [HttpPost("descChange")]
+        public async Task<ActionResult> ChangeDescription([FromQuery] string roomId, [FromQuery] string description)
+        {
+            var userId = HttpContext.GetUserId();
+
+            if (!userId.HasValue)
+                return BadRequest();
+
+            var roomResult =await roomRepository.FindById(roomId).ConfigureAwait(false);
+
+            if (roomResult.IsError)
+                return roomResult.ToApiResponse();
+
+            var room = roomResult.Result;
+            room.Description = description;
+
+            await roomRepository.Update(room).ConfigureAwait(false);
+            return Ok();
+        }
     }
 }
