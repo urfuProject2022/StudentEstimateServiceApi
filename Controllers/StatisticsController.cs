@@ -12,7 +12,7 @@ namespace StudentEstimateServiceApi.Controllers
     [Route(Route.Base + "/statistics")]
     [ApiController]
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
-    public class StatisticsController  :Controller
+    public class StatisticsController : Controller
     {
         private readonly IStatisticsService statisticsService;
 
@@ -21,15 +21,27 @@ namespace StudentEstimateServiceApi.Controllers
             this.statisticsService = statisticsService;
         }
 
+        [HttpGet("by-room")]
+        public async Task<IActionResult> GetStatisticsByRoom([FromQuery] string roomId)
+        {
+            var userId = HttpContext.GetUserId();
+
+            if (!userId.HasValue || !ObjectId.TryParse(roomId, out var roomObjectId))
+                return BadRequest();
+
+            var statResult = await statisticsService.GetStatisticByRoom(roomObjectId, userId.Value);
+            return statResult.ToApiResponse();
+        }
+
         [HttpGet("by-assignment")]
         public async Task<ActionResult> GetStatisticsByAssignment([FromQuery] string assignmentId)
         {
             var userId = HttpContext.GetUserId();
 
-            if (!userId.HasValue || ObjectId.TryParse(assignmentId,out var assignmentObjectId))
+            if (!userId.HasValue || !ObjectId.TryParse(assignmentId, out var assignmentObjectId))
                 return BadRequest();
 
-            var statResult =await statisticsService.GetStatisticByAssignment(assignmentObjectId, userId.Value);
+            var statResult = await statisticsService.GetStatisticByAssignment(assignmentObjectId, userId.Value);
             return statResult.ToApiResponse();
         }
     }
