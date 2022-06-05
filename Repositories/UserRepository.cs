@@ -24,5 +24,12 @@ namespace StudentEstimateServiceApi.Repositories
         {
             return await Collection.Find(u => usersId.Contains(u.Id)).ToListAsync();
         }
+
+        public async Task<List<User>> FindMany(IEnumerable<ObjectId> batch)
+        {
+            var filter = Builders<User>.Filter.In(x => x.Id, batch);
+            var findResult = await Collection.FindAsync(filter);
+            return findResult.ToList();
+        }
     }
 }

@@ -9,5 +9,6 @@ namespace StudentEstimateServiceApi.Repositories.Interfaces
     {
         Task Update(User user);
         Task<IEnumerable<User>> FindRoomUsers(IEnumerable<ObjectId> usersId);
+        Task<List<User>> FindMany(IEnumerable<ObjectId> batch);
     }
 }

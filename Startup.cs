@@ -13,6 +13,7 @@ using StudentEstimateServiceApi.Common;
 using StudentEstimateServiceApi.Infrastructure.Providers.WorkFileProvider;
 using StudentEstimateServiceApi.Infrastructure.Services.GradeService;
 using StudentEstimateServiceApi.Infrastructure.Services.InviteService;
+using StudentEstimateServiceApi.Infrastructure.Services.StatisticsService;
 using StudentEstimateServiceApi.Infrastructure.Services.WorkService;
 using StudentEstimateServiceApi.Models;
 using StudentEstimateServiceApi.Models.DTO;
@@ -52,6 +53,7 @@ namespace StudentEstimateServiceApi
             services.AddSingleton<IGradeService, GradeService>();
             services.AddSingleton<IWorkFileProvider, WorkFileProvider>();
             services.AddSingleton<IWorkService, WorkService>();
+            services.AddSingleton<IStatisticsService, StatisticsService>();
 
             services.AddControllers();
 
