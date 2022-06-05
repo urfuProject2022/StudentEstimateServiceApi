@@ -55,9 +55,7 @@ namespace StudentEstimateServiceApi.Repositories
         {
             var filter = new BsonDocument("_id", id);
             var deleteResult = await Collection.DeleteOneAsync(filter);
-            return deleteResult.IsAcknowledged && deleteResult.DeletedCount == 1
-                ? OperationResult.Success()
-                : OperationResult.Fail($"An error occurred while deleting {typeof(T).Name} with id {id}");
+            return OperationResult.Success();
         }
 
         public async Task<T> FindFirst(Expression<Func<T, bool>> predicate)

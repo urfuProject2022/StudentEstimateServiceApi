@@ -74,7 +74,7 @@ namespace StudentEstimateServiceApi.Controllers
 
             var userFindResult = await userRepository.FindById(userId.Value);
 
-            if (!userFindResult.IsSuccess) 
+            if (!userFindResult.IsSuccess)
                 return NotFound(userFindResult.ErrorMessage);
 
             var rooms = await roomRepository.FindUserRooms(userFindResult.Result);
@@ -122,11 +122,11 @@ namespace StudentEstimateServiceApi.Controllers
             if (!userId.HasValue)
                 return BadRequest();
 
-            var deleteResult = await roomRepository.Delete(roomId).ConfigureAwait(false);
+            var deleteResult = await roomRepository.Delete(roomId);
             return deleteResult.ToApiResponse();
         }
 
-        [HttpPost("descChange")]
+        [HttpGet("descChange")]
         public async Task<ActionResult> ChangeDescription([FromQuery] string roomId, [FromQuery] string description)
         {
             var userId = HttpContext.GetUserId();
@@ -134,7 +134,7 @@ namespace StudentEstimateServiceApi.Controllers
             if (!userId.HasValue)
                 return BadRequest();
 
-            var roomResult =await roomRepository.FindById(roomId).ConfigureAwait(false);
+            var roomResult = await roomRepository.FindById(roomId);
 
             if (roomResult.IsError)
                 return roomResult.ToApiResponse();
@@ -142,8 +142,8 @@ namespace StudentEstimateServiceApi.Controllers
             var room = roomResult.Result;
             room.Description = description;
 
-            await roomRepository.Update(room).ConfigureAwait(false);
-            return Ok();
+            await roomRepository.Update(room);
+            return Ok(room);
         }
     }
 }

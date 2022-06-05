@@ -7,7 +7,7 @@
         "ASPNETCORE_ENVIRONMENT": "Production"
       },
       "dotnetRunMessages": "true",
-      "applicationUrl": "https://*:*;http://*:*"
+      "applicationUrl": "https://*:443;http://*:80"
     }
   }
 }

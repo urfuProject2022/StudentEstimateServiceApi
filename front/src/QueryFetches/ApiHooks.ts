@@ -110,3 +110,35 @@ export const useWorksToGradeQuery = (assignmentId: string, roomId: string) => {
         return res.data
     }, {retry: false})
 }
+
+export const useDeleteRoomMutation = (onSuccess?: () => void) => {
+    const queryClient = useQueryClient()
+
+    return useMutation<Room, AxiosError, string>(async (roomId) => {
+        const res = await axios.delete(`/rooms?roomId=${roomId}`)
+        return res.data
+    }, {
+        onSuccess(data) {
+            queryClient.setQueryData<Room[]>('rooms', rooms => {
+                return rooms.filter(room => room.id != data.id)
+            })
+            if (onSuccess) onSuccess()
+        }
+    })
+}
+
+export const useChangeRoomDescMutation = (roomId: string, onSuccess?: () => void) => {
+    const queryClient = useQueryClient()
+
+    return useMutation<Room, AxiosError, string>(async (description) => {
+        const res = await axios.get(`/rooms/descChange?roomId=${roomId}&description=${description}`)
+        return res.data
+    }, {
+        onSuccess(data) {
+            queryClient.setQueryData<Room>(["rooms", {roomId}], room => {
+                return data;
+            })
+            if (onSuccess) onSuccess()
+        }
+    })
+}
