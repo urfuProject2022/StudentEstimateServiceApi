@@ -35,7 +35,7 @@ namespace StudentEstimateServiceApi.Controllers
 
             var submitWork = mapper.Map<SubmitWork>(submitWorkDto);
             var submitOperationResult = await workService.Submit(submitWork, userId.Value);
-            
+
             return submitOperationResult.ToApiResponse();
         }
 
@@ -69,6 +69,16 @@ namespace StudentEstimateServiceApi.Controllers
                 return BadRequest();
 
             var userWork = await workService.GetUserWork(assignmentId, userId.Value);
+            return userWork.ToApiResponse();
+        }
+
+        [HttpGet("userWork/{user}")]
+        public async Task<ActionResult> GetUserWorkById([FromQuery] string assignment, [FromRoute] string user)
+        {
+            if (!ObjectId.TryParse(assignment, out var assignmentId) || !ObjectId.TryParse(user, out var userId))
+                return BadRequest();
+
+            var userWork = await workService.GetUserWork(assignmentId, userId);
             return userWork.ToApiResponse();
         }
     }

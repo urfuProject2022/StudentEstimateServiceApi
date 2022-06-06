@@ -25,6 +25,11 @@ export const RoundedStyle = {
     borderRadius: 2
 }
 
+export const SmallSizeIcon = {
+    width: '24px',
+    height: '24px'
+}
+
 export const MediumSizeIcon = {
     width: '36px',
     height: '36px',

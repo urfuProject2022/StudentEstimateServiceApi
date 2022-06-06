@@ -1,9 +1,10 @@
-import React, {useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import '../../App.css';
 import {Button, Card, TextField} from "@mui/material";
 import {useLocation, useNavigate} from "react-router-dom";
 import {useAuth} from "../ProtectedRoutes/AuthProvider";
 import "../../Styles/Auth.css"
+import {BackgroundTintStyle} from "../../Styles/SxStyles";
 
 const Login = () => {
     const [login, setLogin] = useState("")
@@ -12,25 +13,30 @@ const Login = () => {
 
     const auth = useAuth()
     const navigate = useNavigate()
-    let location = useLocation();
+    const location = useLocation();
     // @ts-ignore
-    let from = location.state?.from || "/rooms";
+    const from = location.state?.from.pathname.startsWith("/invite") ? location.state?.from : "/rooms";
+
+    useEffect(() => {
+        if (auth.isAuthorized) {
+            navigate("/rooms", {replace: true})
+        }
+    }, [])
 
     const onLogin = () => {
         auth.signIn(login, password)
             .then(async resp => {
-                if (!resp.ok){
+                if (!resp.ok) {
                     let errorMessage = await resp.text()
                     setErrorMessage(errorMessage)
-                }
-                else {
+                } else {
                     navigate(from)
                 }
             })
     }
 
     return <div className="auth-container">
-        <Card variant="outlined" className="auth-card" sx={{background: "#FAFAFA"}}>
+        <Card variant="outlined" className="auth-card" sx={BackgroundTintStyle}>
             <div className="auth">
                 <TextField label="Логин"
                            autoFocus={true}
@@ -44,7 +50,7 @@ const Login = () => {
                         variant="contained"
                         disabled={!login || !password}>Войти</Button>
                 <Button variant="outlined"
-                        onClick={() => navigate("/registration")}
+                        onClick={() => navigate("/registration", {state: from})}
                         type="submit">Регистрация</Button>
                 <div className="error">{errorMessage}</div>
             </div>

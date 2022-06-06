@@ -2,5 +2,6 @@
 
 namespace StudentEstimateServiceApi.Models.DTO.StatByAssignment
 {
-    public record AssignmentStatGradeRecord(string GradeSetterFullName,ObjectId GradeSetterId, int Grade);
+    public record AssignmentStatGradeRecord(string GradeSetterFullName, ObjectId GradeSetterId, int Grade,
+        string comment);
 }

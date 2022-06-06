@@ -6,7 +6,7 @@ import {useSaveAssignmentMutation} from "../../QueryFetches/ApiHooks";
 import "../../Styles/Modal.css"
 import {Assignment} from "../../Models/Assignment";
 import {DateTimePicker} from "@mui/x-date-pickers";
-import {DashedBorderStyle, ModalStyle, RoundedStyle} from "../../Styles/SxStyles";
+import {BackgroundTintStyle, DashedBorderStyle, ModalStyle, RoundedStyle} from "../../Styles/SxStyles";
 import {addMinutes} from "date-fns";
 import {OverridableStringUnion} from "@mui/types";
 import {ButtonPropsVariantOverrides} from "@mui/material/Button/Button";
@@ -54,7 +54,7 @@ export const AddAssignmentButton: React.FC<{
                 sx={{
                     m: 0,
                     p: 4,
-                    bgcolor: '#FAFAFA',
+                    ...BackgroundTintStyle,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',

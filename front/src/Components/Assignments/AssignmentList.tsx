@@ -1,5 +1,5 @@
 import React from "react";
-import {Card, CardContent, Collapse, Grow, LinearProgress, Stack} from "@mui/material";
+import {Card, CardContent, LinearProgress, Stack} from "@mui/material";
 import {useAssignmentsQuery} from "../../QueryFetches/ApiHooks";
 import {Assignment} from "../../Models/Assignment";
 import {AssignmentItem} from "./AssignmentItem";

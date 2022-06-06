@@ -155,7 +155,7 @@ namespace StudentEstimateServiceApi.Infrastructure.Services.StatisticsService
                 if (!gradeSetters.TryGetValue(grade.GradedByUser, out var gradeSetter))
                     continue;
 
-                yield return new AssignmentStatGradeRecord(gradeSetter.FullName, gradeSetter.Id, grade.Score);
+                yield return new AssignmentStatGradeRecord(gradeSetter.FullName, gradeSetter.Id, grade.Score, grade.Comment);
             }
         }
 

@@ -1,8 +1,8 @@
 ﻿import React, {useEffect, useState} from "react";
-import {Button, Card, IconButton, Modal, Stack, Slider, Input} from "@mui/material";
+import {Button, Card, IconButton, Modal, Stack, Slider, Input, CardContent} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import {Work} from "../../Models/Work";
-import {FullScreenStyle, GrayBorderStyle, MediumSizeIcon, ModalStyle} from "../../Styles/SxStyles";
+import {FullScreenStyle, GrayBorderStyle, MediumSizeIcon, ModalStyle, SmallSizeIcon} from "../../Styles/SxStyles";
 import Box from "@mui/material/Box";
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import {TextFieldWrapper} from "./WorkUploadCard";
@@ -14,6 +14,7 @@ import {setGradeRequest} from "../../Utils/Requests";
 import RateReviewRoundedIcon from '@mui/icons-material/RateReviewRounded';
 import DoneRoundedIcon from '@mui/icons-material/DoneRounded';
 import {useSnackbar} from "notistack";
+import AttachFileRoundedIcon from "@mui/icons-material/AttachFileRounded";
 
 
 export const WorkToGradeItem: React.FC<{
@@ -23,7 +24,7 @@ export const WorkToGradeItem: React.FC<{
     onSubmit: () => void
 }> = ({work, index, assignmentId, onSubmit}) => {
     const [modalVisible, setModalVisible] = useState(false)
-    const [comment, setComment] = useState("") //TODO: ДОБАВИТЬ В МОДЕЛЬКУ НА БЕКЕ ОБРАБОТКУ КОММЕНТАРИЕВ
+    const [comment, setComment] = useState("")
     const [selectedFiles, setSelectedFiles] = useState<File[]>([])
     const [grade, setGrade] = useState<number | string | Array<number | string>>(30);
     const [isSubmitted, setIsSubmitted] = useState(false)
@@ -62,7 +63,7 @@ export const WorkToGradeItem: React.FC<{
 
     const onSubmitGrade = () => {
         onSubmit()
-        setGradeRequest((grade as number), work.workId, assignmentId)
+        setGradeRequest((grade as number), work.workId, assignmentId, comment)
             .then(r => {
                 setIsSubmitted(true)
                 setModalVisible(false)
@@ -117,18 +118,15 @@ export const WorkToGradeItem: React.FC<{
             open={modalVisible}
             onClose={() => setModalVisible(false)}>
             <Box className="modal" sx={[ModalStyle, FullScreenStyle]}>
-                <Stack spacing={2}>
+                <Stack spacing={4}>
                     <Stack spacing={2} direction={"row"}>
 
-                        <Typography id="modal-modal-title" flexGrow={1} variant="h5" alignSelf={"center"}>
+                        <Typography id="modal-modal-title" flexGrow={1} variant="h4" alignSelf={"center"}>
                             Работа №{index}
                         </Typography>
 
                         <IconButton onClick={() => setModalVisible(false)}>
-                            <CloseRoundedIcon sx={{
-                                width: 36,
-                                height: 36
-                            }}/>
+                            <CloseRoundedIcon sx={MediumSizeIcon}/>
                         </IconButton>
 
                     </Stack>
@@ -138,14 +136,31 @@ export const WorkToGradeItem: React.FC<{
                             <TextFieldWrapper label={"Текст работы"} multiline value={work.textAnswer}
                                               InputProps={{readOnly: true}}
                                               rows={15}/>
-                            
-                            <Typography variant={"h6"}>Прикрепленные файлы:</Typography>
-                            <SelectedFilesChipList files={selectedFiles} onClick={onSave} isDeletable={false}/>
+
+                            <Card variant={"outlined"} sx={RoundedStyle}>
+                                <CardContent>
+                                    <Stack spacing={3}>
+                                        <Stack direction={"row"} spacing={1} justifyContent={"space-between"}>
+                                            <Typography variant={"h5"}>Прикрепленные файлы</Typography>
+
+                                            <Stack direction={"row"} spacing={0.5} alignItems={"center"}>
+                                                <AttachFileRoundedIcon sx={SmallSizeIcon}/>
+                                                <Typography variant={"body1"} fontWeight={"550"}>
+                                                    {selectedFiles.length}
+                                                </Typography>
+
+                                            </Stack>
+                                        </Stack>
+                                        <SelectedFilesChipList files={selectedFiles} onClick={onSave} isDeletable={false}/>
+                                    </Stack>
+                                </CardContent>
+                            </Card>
+
                         </Stack>
 
                         <Stack spacing={2} flexBasis={"50%"}>
 
-                            <Typography variant={"h6"}>Ваша оценка</Typography>
+                            <Typography variant={"h5"}>Ваша оценка</Typography>
                             <Stack direction={"row"} spacing={4}>
                                 <Slider
                                     value={typeof grade === 'number' ? grade : 0}

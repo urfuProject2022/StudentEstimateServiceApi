@@ -1,5 +1,4 @@
-﻿using System;
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace StudentEstimateServiceApi.Models
@@ -16,5 +15,6 @@ namespace StudentEstimateServiceApi.Models
         /// id пользователя который поставил оценку
         /// </summary>
         public ObjectId GradedByUser;
+        public string Comment;
     }
 }

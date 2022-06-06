@@ -5,7 +5,7 @@ import Box from "@mui/material/Box";
 import {Room} from "../../Models/Room";
 import {useSaveRoomMutation} from "../../QueryFetches/ApiHooks";
 import "../../Styles/Modal.css"
-import {DashedBorderStyle, ModalStyle, RoundedStyle} from "../../Styles/SxStyles";
+import {BackgroundTintStyle, DashedBorderStyle, ModalStyle, RoundedStyle} from "../../Styles/SxStyles";
 import {OverridableStringUnion} from "@mui/types";
 import {ButtonPropsVariantOverrides} from "@mui/material/Button/Button";
 import {useSnackbar} from "notistack";
@@ -33,7 +33,7 @@ export const AddRoomButton: React.FC<{
                 sx={{
                     m: 0,
                     minHeight: '20vh',
-                    bgcolor: '#FAFAFA',
+                    ...BackgroundTintStyle,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import {
     Button,
     Card,
@@ -20,8 +20,10 @@ import {_base64ToArrayBuffer} from "../../Utils/Common";
 import {saveAs} from "file-saver";
 import {submitWorkRequest} from "../../Utils/Requests";
 import {SelectedFilesChipList} from "../Common/SelectedFilesChipList";
-import {OnHoverColoredStyle, RoundedStyle} from "../../Styles/SxStyles";
+import {AnimatedSizeStyle, RoundedStyle} from "../../Styles/SxStyles";
 import {useSnackbar} from "notistack";
+import {differenceInMinutes, parseISO} from "date-fns";
+import {Assignment} from "../../Models/Assignment";
 
 export const TextFieldWrapper = styled(TextField)`
   fieldset {
@@ -30,13 +32,14 @@ export const TextFieldWrapper = styled(TextField)`
 `;
 
 export const WorkUploadCard: React.FC<{
-    assignmentId: string
+    assignment: Assignment
     roomId: string
     work?: Work
     isLoading: boolean
     isError: boolean
     onSubmitted: () => void
-}> = ({assignmentId, roomId, work, isLoading, isError, onSubmitted}) => {
+}> = ({assignment, roomId, work, isLoading, isError, onSubmitted}) => {
+    //TODO: ЮЗЕР ДОЛЖЕН ВИДЕТЬ СВОЮ ОЦЕНКУ
 
     useEffect(() => {
         if (isLoading || isError || !work) return
@@ -56,6 +59,9 @@ export const WorkUploadCard: React.FC<{
     const [isUploading, setIsUploading] = useState(false)
     const [isEnabled, setIsEnabled] = useState(true)
     const [selectedFiles, setSelectedFiles] = useState<File[]>([])
+    const assignmentDate = useMemo(() => parseISO(assignment.expirationTime), [assignment])
+    const diffInMinutes = useMemo(() => differenceInMinutes(assignmentDate, new Date()),[assignmentDate])
+
     const {enqueueSnackbar} = useSnackbar()
 
     const onFileDrop = (acceptedFiles: File[]) => {
@@ -74,7 +80,7 @@ export const WorkUploadCard: React.FC<{
 
     const onSubmit = async () => {
         const work: SubmitWork = {
-            assignmentId: assignmentId,
+            assignmentId: assignment.id,
             roomId: roomId,
             textAnswer: workText,
             fileAnswers: selectedFiles
@@ -106,7 +112,7 @@ export const WorkUploadCard: React.FC<{
                                 onClick={() => onSubmit()}
                                 endIcon={<SendIcon/>}
                                 loading={isUploading}
-                                disabled={!isEnabled}
+                                disabled={!isEnabled || diffInMinutes <= 0}
                                 loadingPosition="end"
                                 variant="contained"
                                 sx={{alignSelf: "center"}}
@@ -130,7 +136,7 @@ export const WorkUploadCard: React.FC<{
                                                 <input {...getInputProps()} />
                                                 <Card variant={"outlined"} sx={
                                                     [RoundedStyle,
-                                                    OnHoverColoredStyle]
+                                                        AnimatedSizeStyle]
                                                 }>
                                                     <Stack alignItems="center" justifyContent="center"
                                                            spacing={2}

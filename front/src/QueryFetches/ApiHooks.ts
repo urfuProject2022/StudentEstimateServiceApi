@@ -7,6 +7,7 @@ import {User} from "../Models/User";
 import {Work} from "../Models/Work";
 import {BatchWorksToGrade} from "../Models/BatchWorksToGrade";
 import {RoomInfo} from "../Models/RoomInfo";
+import {AssignmentStatistics} from "../Models/Statistics/AssignmentStatistics";
 
 export const useRoomsQuery = () => {
     return useQuery<Room[], AxiosError>('rooms', async () => {
@@ -104,10 +105,26 @@ export const useSubmittedWorkQuery = (assignmentId: string) => {
     }, {retry: false})
 }
 
+export const useGradedUserWorkQuery = (assignmentId: string, userId: string) => {
+    return useQuery<Work, AxiosError>(["graded_work", `${assignmentId}${userId}`], async () => {
+        await delay(500)
+        const res = await axios.get(`works/userWork/${userId}?assignment=${assignmentId}`)
+        return res.data
+    }, {retry: false, enabled: false})
+}
+
 export const useWorksToGradeQuery = (assignmentId: string, roomId: string) => {
     return useQuery<BatchWorksToGrade, AxiosError>(["works", {assignmentId}], async () => {
         await delay(500)
         const res = await axios.get(`works/to-grade?assignment=${assignmentId}&room=${roomId}`)
+        return res.data
+    }, {retry: false})
+}
+
+export const useAssignmentStatistics = (assignmentId: string) => {
+    return useQuery<AssignmentStatistics, AxiosError>(["assignment_stat", {assignmentId}], async () => {
+        await delay(500)
+        const res = await axios.get(`statistics/by-assignment?assignmentId=${assignmentId}`)
         return res.data
     }, {retry: false})
 }

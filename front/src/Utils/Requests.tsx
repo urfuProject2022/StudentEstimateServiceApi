@@ -44,6 +44,6 @@ export const acceptInviteRequest = (roomId: string) => {
     return axios.get(`invites/accept?roomId=${roomId}`)
 }
 
-export const setGradeRequest = (score: number, gradedWorkId: string, assignmentId: string) => {
-    return axios.post('grade/set', {score, gradedWorkId, assignmentId})
+export const setGradeRequest = (score: number, gradedWorkId: string, assignmentId: string, comment: string) => {
+    return axios.post('grade/set', {score, gradedWorkId, assignmentId, comment})
 }
