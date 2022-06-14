@@ -1,20 +1,28 @@
-﻿import React, {useEffect, useState} from "react";
+﻿import React, {useEffect, useMemo, useState} from "react";
 import {Button, Card, IconButton, Modal, Stack, Slider, Input, CardContent} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import {Work} from "../../Models/Work";
-import {FullScreenStyle, GrayBorderStyle, MediumSizeIcon, ModalStyle, SmallSizeIcon} from "../../Styles/SxStyles";
+import {
+    animatedStyleWithColor, borderStyleWithColor,
+    FullScreenStyle,
+    MediumSizeIcon,
+    ModalStyle,
+    SmallSizeIcon
+} from "../../Styles/SxStyles";
 import Box from "@mui/material/Box";
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import {TextFieldWrapper} from "./WorkUploadCard";
 import {SelectedFilesChipList} from "../Common/SelectedFilesChipList";
 import {_base64ToArrayBuffer} from "../../Utils/Common";
 import {saveAs} from "file-saver";
-import {OnHoverColoredWithShadowStyle, RoundedStyle} from "../../Styles/SxStyles";
+import {RoundedStyle} from "../../Styles/SxStyles";
 import {setGradeRequest} from "../../Utils/Requests";
 import RateReviewRoundedIcon from '@mui/icons-material/RateReviewRounded';
 import DoneRoundedIcon from '@mui/icons-material/DoneRounded';
 import {useSnackbar} from "notistack";
 import AttachFileRoundedIcon from "@mui/icons-material/AttachFileRounded";
+import {useTheme} from "@mui/material/styles";
+import {AttachmentsCard} from "../Common/AttachmentsCard";
 
 
 export const WorkToGradeItem: React.FC<{
@@ -23,6 +31,10 @@ export const WorkToGradeItem: React.FC<{
     assignmentId: string
     onSubmit: () => void
 }> = ({work, index, assignmentId, onSubmit}) => {
+    const theme = useTheme()
+    const colorStyle = useMemo(() => animatedStyleWithColor(theme), [theme])
+    const borderStyle = useMemo(() => borderStyleWithColor(theme), [theme])
+
     const [modalVisible, setModalVisible] = useState(false)
     const [comment, setComment] = useState("")
     const [selectedFiles, setSelectedFiles] = useState<File[]>([])
@@ -40,10 +52,6 @@ export const WorkToGradeItem: React.FC<{
 
         setSelectedFiles(decodedFiles)
     }, [modalVisible])
-
-    const onSave = (file: File) => {
-        saveAs(file, file.name)
-    }
 
     const handleSliderChange = (event: Event, newValue: number | number[]) => {
         setGrade(newValue);
@@ -78,12 +86,12 @@ export const WorkToGradeItem: React.FC<{
                   m: 0,
                   px: 2,
                   py: 2,
-                  bgcolor: '#fcfcfc',
+                  bgcolor: '#fefefe',
                   color: 'grey.900',
                   boxShadow: 0,
-                  ...GrayBorderStyle,
+                  ...borderStyle,
                   ...RoundedStyle,
-                  ...OnHoverColoredWithShadowStyle
+                  ...colorStyle
               }}>
             <div style={{
                 display: "flex",
@@ -136,26 +144,7 @@ export const WorkToGradeItem: React.FC<{
                             <TextFieldWrapper label={"Текст работы"} multiline value={work.textAnswer}
                                               InputProps={{readOnly: true}}
                                               rows={15}/>
-
-                            <Card variant={"outlined"} sx={RoundedStyle}>
-                                <CardContent>
-                                    <Stack spacing={3}>
-                                        <Stack direction={"row"} spacing={1} justifyContent={"space-between"}>
-                                            <Typography variant={"h5"}>Прикрепленные файлы</Typography>
-
-                                            <Stack direction={"row"} spacing={0.5} alignItems={"center"}>
-                                                <AttachFileRoundedIcon sx={SmallSizeIcon}/>
-                                                <Typography variant={"body1"} fontWeight={"550"}>
-                                                    {selectedFiles.length}
-                                                </Typography>
-
-                                            </Stack>
-                                        </Stack>
-                                        <SelectedFilesChipList files={selectedFiles} onClick={onSave} isDeletable={false}/>
-                                    </Stack>
-                                </CardContent>
-                            </Card>
-
+                           <AttachmentsCard selectedFiles={selectedFiles} isDeletable={false}/>
                         </Stack>
 
                         <Stack spacing={2} flexBasis={"50%"}>

@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useMemo, useState} from "react";
 import {Button, Modal, TextField, Typography} from "@mui/material";
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import Box from "@mui/material/Box";
@@ -6,11 +6,17 @@ import {useSaveAssignmentMutation} from "../../QueryFetches/ApiHooks";
 import "../../Styles/Modal.css"
 import {Assignment} from "../../Models/Assignment";
 import {DateTimePicker} from "@mui/x-date-pickers";
-import {BackgroundTintStyle, DashedBorderStyle, ModalStyle, RoundedStyle} from "../../Styles/SxStyles";
+import {
+    BackgroundTintStyle,
+    dashedStyleWithColor,
+    ModalStyle,
+    RoundedStyle
+} from "../../Styles/SxStyles";
 import {addMinutes} from "date-fns";
 import {OverridableStringUnion} from "@mui/types";
 import {ButtonPropsVariantOverrides} from "@mui/material/Button/Button";
 import {useSnackbar} from "notistack";
+import {useTheme} from "@mui/material/styles";
 
 export const AddAssignmentButton: React.FC<{
     roomId: string,
@@ -18,6 +24,9 @@ export const AddAssignmentButton: React.FC<{
 }> = ({roomId, variant}) => {
 
     const {enqueueSnackbar} = useSnackbar();
+    const theme = useTheme()
+    const dashedStyle = useMemo(() => dashedStyleWithColor(theme), [theme])
+
     const [modalVisible, setModalVisible] = useState(false)
     const [assignment, setAssignment] = useState<Assignment>({
         title: "",
@@ -59,7 +68,7 @@ export const AddAssignmentButton: React.FC<{
                     alignItems: 'center',
                     justifyContent: 'center',
                     opacity: '0.5',
-                    ...DashedBorderStyle,
+                    ...dashedStyle,
                     ...RoundedStyle,
                     boxShadow: 0,
                     ":hover": {

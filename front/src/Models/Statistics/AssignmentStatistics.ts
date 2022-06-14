@@ -1,4 +1,4 @@
-import {AssignmentUserStat} from "./AssignmentStatUserRecord";
+import {AssignmentUserStat} from "./AssignmentUserStat";
 
 export type AssignmentStatistics = {
     title:string,

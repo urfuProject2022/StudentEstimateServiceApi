@@ -1,5 +1,5 @@
 ﻿import * as React from 'react';
-import {useState} from 'react';
+import {useEffect, useMemo, useState} from 'react';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -16,106 +16,130 @@ import {Link, Navigate, Route, Routes} from "react-router-dom";
 import {RoomList} from "../Rooms/RoomList";
 import {AccountBox} from "@mui/icons-material";
 import {useAuth} from "../ProtectedRoutes/AuthProvider";
-import {Button, ListItemButton} from "@mui/material";
+import {Button, createTheme, ListItemButton, ThemeProvider} from "@mui/material";
 import {RoomInnerPage} from "../Rooms/RoomInnerPage";
 import {AssignmentPage} from "../Assignments/AssignmentPage";
 import {BackgroundTintStyle} from "../../Styles/SxStyles";
+import {blue, red} from "@mui/material/colors";
 
 const drawerWidth = 240;
 
 export const DrawerNavigation: React.FC = () => {
     const auth = useAuth()
+
+    const [color, setColor] = useState(blue[700].toString())
+    const theme = useMemo(
+        () =>
+            createTheme({
+                palette: {
+                    primary: {main: color},
+                },
+            }),
+        [color],
+    );
+
+    useEffect(() => {
+        if (!auth.user) return
+
+        setColor(auth.user.role == "Admin" ? red[500] : blue[700])
+
+    }, [auth.user])
+
     const listItemStyle = {px: 3};
 
     const [selectedPage, setSelectedPage] = useState(getCurrentLocation())
 
-    return <Box sx={{display: 'flex'}}>
-        <CssBaseline/>
-        <AppBar
-            color="inherit"
-            elevation={0}
-            position="fixed"
-            sx={{
-                width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px`,
-                bgcolor: '#FFF'
-            }}
-        >
-            <Toolbar sx={{
-                display: "flex",
-                gap: 2,
-                alignItems: "center",
-            }}>
-                <Typography variant="h6" noWrap flexGrow={1}>{selectedPage}</Typography>
-                <Typography variant="body1" noWrap>
-                    {auth.user ? auth.user.fullName : null}
-                </Typography>
-                <Button variant="outlined" onClick={() => auth.signOut()}>
-                    Выйти
-                </Button>
-            </Toolbar>
-            <Divider/>
-        </AppBar>
-        <Drawer
-            sx={{
-                width: drawerWidth,
-                flexShrink: 0,
-                '& .MuiDrawer-paper': {
+    return <ThemeProvider theme={theme}>
+
+        <Box sx={{display: 'flex'}}>
+            <CssBaseline/>
+            <AppBar
+                color="inherit"
+                elevation={0}
+                position="fixed"
+                sx={{
+                    width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px`,
+                    bgcolor: '#FFF'
+                }}
+            >
+                <Toolbar sx={{
+                    display: "flex",
+                    gap: 2,
+                    alignItems: "center",
+                }}>
+                    <Typography variant="h6" noWrap flexGrow={1}>{selectedPage}</Typography>
+                    <Typography variant="body1" noWrap>
+                        {auth.user ? auth.user.fullName : null}
+                    </Typography>
+                    <Button variant="outlined" onClick={() => auth.signOut()}>
+                        Выйти
+                    </Button>
+                </Toolbar>
+                <Divider/>
+            </AppBar>
+            <Drawer
+                sx={{
                     width: drawerWidth,
-                    boxSizing: 'border-box',
-                },
-            }}
-            variant="permanent"
-        >
-            <Toolbar>
-                <Typography variant="h6" noWrap component="div">Сервис оценки</Typography>
-            </Toolbar>
-            <Divider/>
-            <List>
-                <ListItemButton selected={selectedPage === "Комнаты"} component={Link} to={"/rooms"}
-                                key={'Комнаты'} sx={listItemStyle}
-                                onClick={() => setSelectedPage("Комнаты")}>
-                    <ListItemIcon>
-                        <GroupIcon/>
-                    </ListItemIcon>
-                    <ListItemText primary={'Комнаты'}/>
-                </ListItemButton>
+                    flexShrink: 0,
+                    '& .MuiDrawer-paper': {
+                        width: drawerWidth,
+                        boxSizing: 'border-box',
+                    },
+                }}
+                variant="permanent"
+            >
+                <Toolbar>
+                    <Typography variant="h6" noWrap component="div">Сервис оценки</Typography>
+                </Toolbar>
+                <Divider/>
+                <List>
+                    <ListItemButton selected={selectedPage === "Комнаты"} component={Link} to={"/rooms"}
+                                    key={'Комнаты'} sx={listItemStyle}
+                                    onClick={() => setSelectedPage("Комнаты")}>
+                        <ListItemIcon>
+                            <GroupIcon/>
+                        </ListItemIcon>
+                        <ListItemText primary={'Комнаты'}/>
+                    </ListItemButton>
 
-                <ListItemButton selected={selectedPage === "Задания"} component={Link} to={"/assignments"}
-                                key={'Задания'} sx={listItemStyle}
-                                onClick={() => setSelectedPage("Задания")}>
-                    <ListItemIcon>
-                        <AssignmentIcon/>
-                    </ListItemIcon>
-                    <ListItemText primary={'Задания'}/>
-                </ListItemButton>
+                    <ListItemButton selected={selectedPage === "Задания"} component={Link} to={"/assignments"}
+                                    key={'Задания'} sx={listItemStyle}
+                                    onClick={() => setSelectedPage("Задания")}>
+                        <ListItemIcon>
+                            <AssignmentIcon/>
+                        </ListItemIcon>
+                        <ListItemText primary={'Задания'}/>
+                    </ListItemButton>
 
-                <ListItemButton selected={selectedPage === "Профиль"} component={Link} to={"/profile"} key={'Профиль'}
-                                sx={listItemStyle}
-                                onClick={() => setSelectedPage("Профиль")}>
-                    <ListItemIcon>
-                        <AccountBox/>
-                    </ListItemIcon>
-                    <ListItemText primary={'Профиль'}/>
-                </ListItemButton>
-            </List>
-        </Drawer>
-        <Box
-            component="div"
-            sx={{flexGrow: 1, p: 3, minHeight: "100vh", ...BackgroundTintStyle}}
-        >
-            <Toolbar/>
+                    <ListItemButton selected={selectedPage === "Профиль"} component={Link} to={"/profile"}
+                                    key={'Профиль'}
+                                    sx={listItemStyle}
+                                    onClick={() => setSelectedPage("Профиль")}>
+                        <ListItemIcon>
+                            <AccountBox/>
+                        </ListItemIcon>
+                        <ListItemText primary={'Профиль'}/>
+                    </ListItemButton>
+                </List>
+            </Drawer>
+            <Box
+                component="div"
+                sx={{flexGrow: 1, p: 3, minHeight: "100vh", ...BackgroundTintStyle}}
+            >
+                <Toolbar/>
 
-            <Routes>
-                <Route path="profile" element={<div>Profile page</div>}/>
-                <Route path="assignments" element={<div>Assignment page</div>}/>
-                <Route path="rooms" element={<RoomList/>}/>
-                <Route path="rooms/:roomId" element={<RoomInnerPage/>}/>
-                <Route path="rooms/:roomId/assignments/:assignmentId" element={<AssignmentPage/>}/>
-                <Route path="/" element={<Navigate to="/rooms" replace/>}/>
-            </Routes>
+                <Routes>
+                    <Route path="profile" element={<div>Profile page</div>}/>
+                    <Route path="assignments" element={<div>Assignment page</div>}/>
+                    <Route path="rooms" element={<RoomList/>}/>
+                    <Route path="rooms/:roomId" element={<RoomInnerPage/>}/>
+                    <Route path="rooms/:roomId/assignments/:assignmentId" element={<AssignmentPage/>}/>
+                    <Route path="/" element={<Navigate to="/rooms" replace/>}/>
+                </Routes>
 
+            </Box>
         </Box>
-    </Box>;
+    </ThemeProvider>;
 }
 
 const getCurrentLocation = () => {

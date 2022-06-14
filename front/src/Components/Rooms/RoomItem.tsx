@@ -1,4 +1,4 @@
-﻿import React from "react";
+﻿import React, {useMemo} from "react";
 import {Room} from "../../Models/Room";
 import {Card} from "@mui/material";
 import {useNavigate} from "react-router-dom";
@@ -6,17 +6,20 @@ import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
 import Typography from "@mui/material/Typography";
 import "../../Styles/Auth.css"
 import {
-    GrayBorderStyle,
     MediumSizeIcon,
-    OnHoverColoredWithShadowStyle,
     RoundedStyle,
-    AnimatedSizeStyle
+    animatedStyleWithColor, borderStyleWithColor
 } from "../../Styles/SxStyles";
+import {useTheme} from "@mui/material/styles";
 
 export const RoomItem: React.FC<{
     room: Room;
 }> = ({room}) => {
     const navigate = useNavigate()
+    const theme = useTheme()
+    const colorStyle = useMemo(() => animatedStyleWithColor(theme), [theme])
+    const borderStyle = useMemo(() => borderStyleWithColor(theme), [theme])
+
     return <Card
         onClick={() => {
             navigate(`/rooms/${room.id}`)
@@ -25,11 +28,11 @@ export const RoomItem: React.FC<{
             m: 0,
             px: 3,
             py: 2,
-            bgcolor: '#fcfcfc',
+            bgcolor: '#fefefe',
             color: 'grey.900',
-            ...GrayBorderStyle,
+            ...borderStyle,
             ...RoundedStyle,
-            ...AnimatedSizeStyle,
+            ...colorStyle,
         }}>
         <div style={{
             display: "flex",

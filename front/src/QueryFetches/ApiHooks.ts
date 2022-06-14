@@ -8,6 +8,7 @@ import {Work} from "../Models/Work";
 import {BatchWorksToGrade} from "../Models/BatchWorksToGrade";
 import {RoomInfo} from "../Models/RoomInfo";
 import {AssignmentStatistics} from "../Models/Statistics/AssignmentStatistics";
+import {WorkStatistics} from "../Models/Statistics/WorkStatistics";
 
 export const useRoomsQuery = () => {
     return useQuery<Room[], AxiosError>('rooms', async () => {
@@ -75,7 +76,6 @@ export const useSaveAssignmentMutation = (roomId: string, onSuccess: () => void)
             minGradeCountForWork: assignment.gradeCount,
             maxGradeCountForWork: assignment.gradeCount
         }
-        console.log(dto)
         const res = await axios.post(`/assignments?roomId=${roomId}`, dto)
         return res.data
     }, {
@@ -125,6 +125,14 @@ export const useAssignmentStatistics = (assignmentId: string) => {
     return useQuery<AssignmentStatistics, AxiosError>(["assignment_stat", {assignmentId}], async () => {
         await delay(500)
         const res = await axios.get(`statistics/by-assignment?assignmentId=${assignmentId}`)
+        return res.data
+    }, {retry: false})
+}
+
+export const useWorkStatistics = (workId: string) => {
+    return useQuery<WorkStatistics, AxiosError>(["work_stat", {workId}], async () => {
+        await delay(500)
+        const res = await axios.get(`statistics/by-work?workId=${workId}`)
         return res.data
     }, {retry: false})
 }

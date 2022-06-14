@@ -1,26 +1,25 @@
-import React, {useEffect, useState} from "react";
-import {Card, CardContent, CircularProgress, IconButton, Modal, Stack} from "@mui/material";
+import React, {useEffect, useMemo, useState} from "react";
+import {Card, CircularProgress, IconButton, Modal, Stack} from "@mui/material";
 import {
+    animatedStyleWithColor, borderStyleWithColor,
     CircularProgressStyle,
     FullScreenStyle,
-    GrayBorderStyle, MediumSizeIcon,
+    MediumSizeIcon,
     ModalStyle,
-    OnHoverColoredWithShadowStyle,
     RoundedStyle, SmallSizeIcon
 } from "../../Styles/SxStyles";
 import Typography from "@mui/material/Typography";
-import {AssignmentUserStat} from "../../Models/Statistics/AssignmentStatUserRecord";
+import {AssignmentUserStat} from "../../Models/Statistics/AssignmentUserStat";
 import {WorkScore} from "../Common/WorkScore";
 import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
 import Box from "@mui/material/Box";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import {TextFieldWrapper} from "../Works/WorkUploadCard";
-import {SelectedFilesChipList} from "../Common/SelectedFilesChipList";
 import {_base64ToArrayBuffer} from "../../Utils/Common";
-import {saveAs} from "file-saver";
 import {useGradedUserWorkQuery} from "../../QueryFetches/ApiHooks";
-import AttachFileRoundedIcon from '@mui/icons-material/AttachFileRounded';
 import {GradesList} from "../Grades/GradesList";
+import {useTheme} from "@mui/material/styles";
+import {AttachmentsCard} from "../Common/AttachmentsCard";
 
 export const UserStatItem: React.FC<{
     assignmentId: string
@@ -29,6 +28,10 @@ export const UserStatItem: React.FC<{
     const [modalVisible, setModalVisible] = useState(false)
     const [selectedFiles, setSelectedFiles] = useState<File[]>([])
     const {data: work, refetch, isLoading} = useGradedUserWorkQuery(assignmentId, assignmentUserStat.userId)
+
+    const theme = useTheme()
+    const colorStyle = useMemo(() => animatedStyleWithColor(theme), [theme])
+    const borderStyle = useMemo(() => borderStyleWithColor(theme), [theme])
 
     useEffect(() => {
         if (!modalVisible) return
@@ -46,11 +49,6 @@ export const UserStatItem: React.FC<{
 
     }, [modalVisible])
 
-
-    const onSave = (file: File) => {
-        saveAs(file, file.name)
-    }
-
     return <>
         <Card
             onClick={() => {
@@ -61,11 +59,11 @@ export const UserStatItem: React.FC<{
                 m: 0,
                 px: 2,
                 py: 2,
-                bgcolor: '#fcfcfc',
+                bgcolor: '#fefefe',
                 color: 'grey.900',
-                ...GrayBorderStyle,
+                ...borderStyle,
                 ...RoundedStyle,
-                ...OnHoverColoredWithShadowStyle
+                ...colorStyle
             }}>
             <div style={{
                 display: "flex",
@@ -127,24 +125,7 @@ export const UserStatItem: React.FC<{
                                                   InputProps={{readOnly: true}}
                                                   rows={15}/>
 
-                                <Card variant={"outlined"} sx={RoundedStyle}>
-                                    <CardContent>
-                                        <Stack spacing={3}>
-                                            <Stack direction={"row"} spacing={1} justifyContent={"space-between"}>
-                                                <Typography variant={"h5"}>Прикрепленные файлы</Typography>
-
-                                                <Stack direction={"row"} spacing={0.5} alignItems={"center"}>
-                                                    <AttachFileRoundedIcon sx={SmallSizeIcon}/>
-                                                    <Typography variant={"body1"} fontWeight={"550"}>
-                                                        {selectedFiles.length}
-                                                    </Typography>
-
-                                                </Stack>
-                                            </Stack>
-                                            <SelectedFilesChipList files={selectedFiles} onClick={onSave} isDeletable={false}/>
-                                        </Stack>
-                                    </CardContent>
-                                </Card>
+                                <AttachmentsCard selectedFiles={selectedFiles} isDeletable={false}/>
                             </Stack>
                             <GradesList gradeSettersInfo={assignmentUserStat.gradeSettersInfo}/>
                         </Stack>

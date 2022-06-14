@@ -1,14 +1,20 @@
-import React, {useState} from "react";
+import React, {useMemo, useState} from "react";
 import {Button, Modal, TextField, Typography} from "@mui/material";
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import Box from "@mui/material/Box";
 import {Room} from "../../Models/Room";
 import {useSaveRoomMutation} from "../../QueryFetches/ApiHooks";
 import "../../Styles/Modal.css"
-import {BackgroundTintStyle, DashedBorderStyle, ModalStyle, RoundedStyle} from "../../Styles/SxStyles";
+import {
+    BackgroundTintStyle,
+    dashedStyleWithColor,
+    ModalStyle,
+    RoundedStyle
+} from "../../Styles/SxStyles";
 import {OverridableStringUnion} from "@mui/types";
 import {ButtonPropsVariantOverrides} from "@mui/material/Button/Button";
 import {useSnackbar} from "notistack";
+import {useTheme} from "@mui/material/styles";
 
 export const AddRoomButton: React.FC<{
     variant?: OverridableStringUnion<'box' | 'button', ButtonPropsVariantOverrides>
@@ -16,7 +22,10 @@ export const AddRoomButton: React.FC<{
     const [modalVisible, setModalVisible] = useState(false)
     const [roomName, setRoomName] = useState("")
     const [roomDesc, setRoomDesc] = useState("")
+
     const {enqueueSnackbar} = useSnackbar();
+    const theme = useTheme()
+    const dashedStyle = useMemo(() => dashedStyleWithColor(theme), [theme])
 
     const saveMutation = useSaveRoomMutation(() => enqueueSnackbar("Комната успешно создана!", {variant: "success"}))
 
@@ -38,7 +47,7 @@ export const AddRoomButton: React.FC<{
                     alignItems: 'center',
                     justifyContent: 'center',
                     opacity: '0.5',
-                    ...DashedBorderStyle,
+                    ...dashedStyle,
                     ...RoundedStyle,
                     boxShadow: 0,
                     ":hover": {

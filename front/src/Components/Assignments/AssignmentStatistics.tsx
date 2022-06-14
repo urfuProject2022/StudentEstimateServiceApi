@@ -3,7 +3,7 @@ import {Card, CardContent, LinearProgress, Stack} from "@mui/material";
 import {RoundedStyle} from "../../Styles/SxStyles";
 import Typography from "@mui/material/Typography";
 import {useAssignmentStatistics} from "../../QueryFetches/ApiHooks";
-import {AssignmentUserStat} from "../../Models/Statistics/AssignmentStatUserRecord";
+import {AssignmentUserStat} from "../../Models/Statistics/AssignmentUserStat";
 import {UserStatItem} from "./UserStatItem";
 
 export const AssignmentStatistics: React.FC<{

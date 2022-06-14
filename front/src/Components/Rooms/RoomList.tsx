@@ -20,7 +20,7 @@ export const RoomList: React.FC = () => {
     return <>
         {auth.user.role === "Admin" ?
             <> {rooms.length > 0 ?
-                <Stack spacing={'10px'} padding={2} m={0}>
+                <Stack spacing={3} padding={2} m={0}>
                     {rooms!.map((room: Room) =>
                         <RoomItem key={room.id} room={room}/>)}
                     <AddRoomButton variant={"box"} key={"add-button-key"}/>
@@ -36,7 +36,7 @@ export const RoomList: React.FC = () => {
             </> :
             <>
                 {rooms.length > 0 ?
-                    <Stack spacing={'10px'} padding={2} m={0}>
+                    <Stack spacing={3} padding={2} m={0}>
                         {rooms!.map((room: Room) =>
                             <RoomItem key={room.id} room={room}/>)}
                     </Stack> :

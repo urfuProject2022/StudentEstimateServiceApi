@@ -15,7 +15,7 @@ const Login = () => {
     const navigate = useNavigate()
     const location = useLocation();
     // @ts-ignore
-    const from = location.state?.from.pathname.startsWith("/invite") ? location.state?.from : "/rooms";
+    const from = location.state?.from?.pathname?.startsWith("/invite") ? location.state?.from : "/rooms";
 
     useEffect(() => {
         if (auth.isAuthorized) {

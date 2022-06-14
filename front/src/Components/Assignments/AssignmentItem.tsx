@@ -7,13 +7,23 @@ import {Assignment} from "../../Models/Assignment";
 import {format} from 'date-fns-tz'
 import {parseISO, differenceInDays} from "date-fns";
 import { red } from '@mui/material/colors';
-import {GrayBorderStyle, MediumSizeIcon, OnHoverColoredWithShadowStyle, RoundedStyle} from "../../Styles/SxStyles";
+import {
+    animatedStyleWithColor, borderStyleWithColor,
+    MediumSizeIcon,
+    RoundedStyle
+} from "../../Styles/SxStyles";
+import {useTheme} from "@mui/material/styles";
 
 export const AssignmentItem: React.FC<{
     assignment: Assignment;
 }> = ({assignment}) => {
     const navigate = useNavigate()
     const location = useLocation()
+    const theme = useTheme()
+
+    const colorStyle = useMemo(() => animatedStyleWithColor(theme), [theme])
+    const borderStyle = useMemo(() => borderStyleWithColor(theme), [theme])
+
     const assignmentDate = useMemo(() => parseISO(assignment.expirationTime), [assignment])
     const utcDate = useMemo(() => format(assignmentDate, 'dd.MM.yyyy HH:mm'), [assignmentDate])
     const diffInDays = useMemo(() => differenceInDays(assignmentDate, new Date()),[])
@@ -26,11 +36,11 @@ export const AssignmentItem: React.FC<{
             m: 0,
             px: 2,
             py: 2,
-            bgcolor: '#fcfcfc',
+            bgcolor: '#fefefe',
             color: 'grey.900',
-            ...GrayBorderStyle,
             ...RoundedStyle,
-            ...OnHoverColoredWithShadowStyle
+            ...borderStyle,
+            ...colorStyle
         }}>
         <div style={{
             display: "flex",
