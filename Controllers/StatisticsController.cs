@@ -44,5 +44,17 @@ namespace StudentEstimateServiceApi.Controllers
             var statResult = await statisticsService.GetStatisticByAssignment(assignmentObjectId, userId.Value);
             return statResult.ToApiResponse();
         }
+        
+        [HttpGet("by-work")]
+        public async Task<ActionResult> GetStatisticsByWork([FromQuery] string workId)
+        {
+            var userId = HttpContext.GetUserId();
+            
+            if (!userId.HasValue || !ObjectId.TryParse(workId, out var workObjectId))
+                return BadRequest();
+
+            var workStatResult = await statisticsService.GetStatisticsByWork(workObjectId, userId.Value);
+            return workStatResult.ToApiResponse();
+        }
     }
 }

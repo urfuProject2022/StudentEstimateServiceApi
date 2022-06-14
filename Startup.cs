@@ -108,7 +108,7 @@ namespace StudentEstimateServiceApi
 
             app.MapWhen(context => context.Request.Path.StartsWithSegments("/api"),
                 _ => { app.UseEndpoints(x => x.MapControllers()); });
-
+            
             app.UseSpa(x =>
             {
                 x.Options.SourcePath = @"front";

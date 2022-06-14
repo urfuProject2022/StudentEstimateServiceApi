@@ -8,6 +8,7 @@ using StudentEstimateServiceApi.Common.Extensions;
 using StudentEstimateServiceApi.Models;
 using StudentEstimateServiceApi.Models.DTO.StatByAssignment;
 using StudentEstimateServiceApi.Models.DTO.StatByRoom;
+using StudentEstimateServiceApi.Models.DTO.StatByWork;
 using StudentEstimateServiceApi.Repositories.Interfaces;
 
 namespace StudentEstimateServiceApi.Infrastructure.Services.StatisticsService
@@ -138,6 +139,35 @@ namespace StudentEstimateServiceApi.Infrastructure.Services.StatisticsService
             return OperationResult<AssignmentStatistics>.Success(result);
         }
 
+        public async Task<OperationResult<WorkStatistics>> GetStatisticsByWork(ObjectId workId, ObjectId sessionUserId)
+        {
+            var userResult = await userRepository.FindById(sessionUserId);
+
+            if (userResult.IsError)
+                return userResult.ToOperationResult<WorkStatistics>();
+
+            var user = userResult.Result;
+            var workResult = await workRepository.FindById(workId);
+
+            if (workResult.IsError)
+                return workResult.ToOperationResult<WorkStatistics>();
+
+            var userWork = workResult.Result;
+
+            if (user.Id != userWork.UserId)
+                return OperationResult<WorkStatistics>.Fail("No access to this work", 403);
+
+            var averageGradeResult = await FindAverageGrade(userWork.ReceivedMarks);
+
+            var workStatistics = new WorkStatistics()
+            {
+                Grade = averageGradeResult.Result,
+                GradedByCount = userWork.ReceivedMarks.Count,
+            };
+
+            return OperationResult<WorkStatistics>.Success(workStatistics);
+        }
+
         private async Task<OperationResult<Room>> FindRoomByAssignment(ObjectId assignmentId)
         {
             var roomResult = await roomRepository.FindFirst(x => x.Assignments.Contains(assignmentId));
@@ -155,7 +185,8 @@ namespace StudentEstimateServiceApi.Infrastructure.Services.StatisticsService
                 if (!gradeSetters.TryGetValue(grade.GradedByUser, out var gradeSetter))
                     continue;
 
-                yield return new AssignmentStatGradeRecord(gradeSetter.FullName, gradeSetter.Id, grade.Score, grade.Comment);
+                yield return new AssignmentStatGradeRecord(gradeSetter.FullName, gradeSetter.Id, grade.Score,
+                    grade.Comment);
             }
         }
 
@@ -214,7 +245,9 @@ namespace StudentEstimateServiceApi.Infrastructure.Services.StatisticsService
         {
             var grades = await gradeRepository.FindMany(gradesId);
 
-            return OperationResult<double>.Success(grades.Average(x => x.Score));
+            return grades.Count == 0
+                ? OperationResult<double>.Success(0)
+                : OperationResult<double>.Success(grades.Average(x => x.Score));
         }
     }
 }
